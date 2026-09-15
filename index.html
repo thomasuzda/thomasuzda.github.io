@@ -32,6 +32,8 @@
   }
   .site-on .site{opacity:1;pointer-events:auto;visibility:visible;transition:opacity 1.6s ease}
   .site-on .clock{opacity:0}
+  .clock, .skip{transition:opacity .8s ease}
+  .titling .clock, .titling .skip{opacity:0;pointer-events:none}
   .wrap{max-width:1120px;margin-inline:auto;padding-inline:24px}
 
   .nav{
@@ -219,8 +221,7 @@
 <div class="grain"></div>
 
 <div class="overlay" id="overlay">
-  <div class="intro-eyebrow">Let there be light</div>
-  <h1>Everything began with a <em>single point</em></h1>
+  <h1>Let there be <em>light</em></h1>
 </div>
 
 <div class="site" id="site">
@@ -600,7 +601,7 @@
   function init(){
     t = 0; phase = 0; spawnAcc = 0;
     overlay.classList.remove('show','show-actions','leaving');
-    document.body.classList.remove('site-on');
+    document.body.classList.remove('site-on', 'titling');
     document.getElementById('note').textContent = '';
     document.body.classList.remove('done');
 
@@ -1266,7 +1267,7 @@
 
   // title card lands, holds, then dissolves as the homepage fades in on its own
   function stage(){
-    if(t > TITLE) overlay.classList.add('show');
+    if(t > TITLE){ overlay.classList.add('show'); document.body.classList.add('titling'); }
     if(t > SITE_AT && !document.body.classList.contains('done')){
       document.body.classList.add('done');
       overlay.classList.add('leaving');
