@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>First Light Opener</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=IBM+Plex+Mono:wght@400&family=Manrope:wght@400;500;600&display=swap">
@@ -63,7 +65,39 @@
     .overlay.show .light{animation:none}
   }
 
-  button.skip, button.again{
+  /* ---------- monuments: real photographs with a slow 3D camera swing ---------- */
+  .monuments{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;background:#030208;perspective:1100px;overflow:hidden}
+  .mon{position:absolute;inset:0;opacity:0;will-change:opacity}
+  .mon .frame{position:absolute;inset:-9%;transform-style:preserve-3d;will-change:transform}
+  .mon img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.08) contrast(1.04)}
+  .mon .backdrop{position:absolute;inset:-12%;width:124%;height:124%;object-fit:cover;filter:blur(34px) brightness(.5) saturate(1.15);display:none}
+  @media (orientation: landscape){
+    .mon.tall .backdrop{display:block}
+    .mon.tall .frame{inset:-1%}
+    .mon.tall .frame img{object-fit:contain;filter:saturate(1.08) contrast(1.04) drop-shadow(0 20px 50px rgba(0,0,0,.55))}
+  }
+  .mon::after{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 80% 75% at 50% 45%, rgba(0,0,0,0) 45%, rgba(3,2,8,.62) 100%),
+      linear-gradient(to top, rgba(3,2,8,.85) 0%, rgba(3,2,8,.35) 26%, rgba(3,2,8,0) 45%);
+  }
+  .cap{
+    position:absolute;left:clamp(20px,5vw,64px);right:20px;bottom:clamp(26px,7vh,70px);z-index:1;
+    opacity:0;transform:translateY(18px);transition:opacity 1s ease, transform 1.2s cubic-bezier(.16,.84,.3,1);
+  }
+  .mon.on .cap{opacity:1;transform:none;transition-delay:.35s}
+  .cap .yr{font-family:var(--mono);font-size:clamp(11px,1.3vw,13px);letter-spacing:.24em;text-transform:uppercase;color:var(--plasma)}
+  .cap .nm{margin-top:8px;font-family:var(--display);font-weight:300;font-size:clamp(34px,6vw,76px);line-height:1;letter-spacing:-.02em;color:var(--ink);text-shadow:0 2px 30px rgba(3,2,8,.8);text-wrap:balance}
+  .cap .pl{margin-top:10px;font-family:var(--display);font-style:italic;font-size:clamp(15px,1.9vw,21px);color:var(--ink-dim)}
+  .cap .cr{margin-top:16px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:rgba(243,239,230,.42)}
+  .timeline{
+    position:absolute;left:clamp(20px,5vw,64px);right:clamp(20px,5vw,64px);top:clamp(18px,4vh,34px);height:2px;z-index:1;
+    background:rgba(243,239,230,.14);border-radius:2px;overflow:hidden;
+  }
+  .timeline i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg, rgba(255,122,69,.5), var(--plasma))}
+
+  button.skip, button.again{z-index:4;
     position:fixed;right:20px;bottom:12px;padding:8px 14px;font-size:10px;
     font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);
     background:rgba(3,2,8,.4);border:1px solid rgba(243,239,230,.14);border-radius:999px;cursor:pointer;
@@ -114,6 +148,9 @@
     <span class="w light" style="--d:2.1s;--fx:260px;--fy:40px"><em>Light</em></span>
   </h1>
 </div>
+<div class="monuments" id="monuments" aria-live="polite">
+  <div class="timeline" aria-hidden="true"><i id="tlFill"></i></div>
+</div>
 <button class="again" id="againBtn" type="button">↺ Replay</button>
 
 <div class="clock" id="clock">before time</div>
@@ -131,6 +168,27 @@
   const FLASH_PEAK = .72, OPEN_FADE = 1.1;
   // journey after the title: words leave, zoom into the galaxy, planets fly past, arrive at Earth
   const DEPART = TITLE + 5.4, ZOOM0 = DEPART + .3, GAL_IN = ZOOM0 + 5.5, PLAN0 = GAL_IN + 2.4, EARTH0 = PLAN0 + 5.2, FINAL = EARTH0 + 4.8;
+  // dive through Earth's clouds, then humanity's great structures from oldest to newest
+  const DIVE0 = FINAL + 1.6, DIVE1 = DIVE0 + 2.4, MON0 = DIVE1 - .5, MON_STEP = 3.6, MON_FADE = 1;
+
+  // photos: Wikimedia Commons, credited on screen per their licences
+  const MONUMENTS = [
+    {img:'gobekli-tepe',        yr:'c. 9500 BC',   nm:'Göbekli Tepe',          pl:'Şanlıurfa, Türkiye',    cr:'Teomancimit · CC BY-SA 3.0'},
+    {img:'stonehenge',          yr:'c. 3000 BC',   nm:'Stonehenge',            pl:'Wiltshire, England',    cr:'garethwiscombe · CC BY 2.0'},
+    {img:'great-pyramid',       yr:'c. 2560 BC',   nm:'Great Pyramid of Giza', pl:'Giza, Egypt',           cr:'Douwe C. van der Zee · CC BY-SA 4.0'},
+    {img:'parthenon',           yr:'438 BC',       nm:'The Parthenon',         pl:'Athens, Greece',        cr:'Steve Swayne · CC BY 2.0'},
+    {img:'western-wall',        yr:'c. 19 BC',     nm:'The Western Wall',      pl:'Jerusalem',             cr:'Golasso · CC BY-SA 4.0'},
+    {img:'colosseum',           yr:'AD 80',        nm:'The Colosseum',         pl:'Rome, Italy',           cr:'FeaturedPics · CC BY-SA 4.0'},
+    {img:'hagia-sophia',        yr:'AD 537',       nm:'Hagia Sophia',          pl:'Istanbul, Türkiye',     cr:'Adli Wahid · CC BY-SA 3.0'},
+    {img:'notre-dame',          yr:'1345',         nm:'Notre-Dame de Paris',   pl:'Paris, France',         cr:'Ali Sabbagh · CC0'},
+    {img:'sistine-chapel',      yr:'1512',         nm:'Sistine Chapel Ceiling',pl:'Vatican City',          cr:'Antoine Taveneaux · CC BY-SA 3.0', up:true},
+    {img:'st-peters',           yr:'1626',         nm:"St. Peter's Basilica",  pl:'Vatican City',          cr:'Alvesgaspar · CC BY-SA 4.0'},
+    {img:'taj-mahal',           yr:'1653',         nm:'Taj Mahal',             pl:'Agra, India',           cr:'Yann, edited by Jim Carter · CC BY-SA 4.0'},
+    {img:'eiffel-tower',        yr:'1889',         nm:'Eiffel Tower',          pl:'Paris, France',         cr:'Benh LIEU SONG · Public domain', tall:true},
+    {img:'christ-the-redeemer', yr:'1931',         nm:'Christ the Redeemer',   pl:'Rio de Janeiro, Brazil',cr:'Arne Müseler · CC BY-SA 3.0 DE', tall:true},
+    {img:'sagrada-familia',     yr:'1882 – today', nm:'Sagrada Família',       pl:'Barcelona, Spain',      cr:'Canaan · CC BY-SA 4.0', tall:true}
+  ];
+  const MON_END = MON0 + (MONUMENTS.length - 1)*MON_STEP + MON_FADE;
 
   // phones and tablets get a lighter render: fewer particles, smaller rock buffer, lower canvas resolution
   const LITE = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 700;
@@ -1411,10 +1469,30 @@
     const ez = 1 + 11*Math.pow(1 - s, 2.6);
     const ek = S*.5/ez;
     const earthFb = {x: CX, y: CY + .16*ek, r: .78*ek, active: t > EARTH0 - .2, fade: smooth(EARTH0 - .2, EARTH0 + .8, t), z: ez};
+    // the dive: zoom toward a sunlit point on the globe, growing exponentially
+    if(t > DIVE0){
+      const dv = clamp((t - DIVE0)/(DIVE1 - DIVE0), 0, 1);
+      const mag = Math.exp(dv*dv*4.2);
+      const tx = earthFb.x - earthFb.r*.32, ty = earthFb.y - earthFb.r*.18;
+      earthFb.x = CX + (earthFb.x - tx)*mag + (tx - CX)*(1 - ease(dv));
+      earthFb.y = CY + (earthFb.y - ty)*mag + (ty - CY)*(1 - ease(dv));
+      earthFb.r *= mag;
+    }
 
     const drawList = bodies.filter(b => b.fb.active).map(b => ({z: b.fb.z, fn: () => drawBody(J[b.key], b.fb)}));
     if(earthFb.active) drawList.push({z: earthFb.z, fn: () => drawEarth(earthFb)});
     drawList.sort((a,b) => b.z - a.z).forEach(x => x.fn());
+
+    // falling through the atmosphere: cloud-white haze thickens, then clears onto the first monument
+    if(t > DIVE0){
+      const dv = clamp((t - DIVE0)/(DIVE1 - DIVE0), 0, 1);
+      const haze = smooth(.45, 1, dv);
+      ctx.globalCompositeOperation = 'source-over';
+      const hg = ctx.createRadialGradient(CX, CY, 0, CX, CY, Math.max(W,H)*.75);
+      hg.addColorStop(0, `rgba(236,242,250,${haze*.95})`);
+      hg.addColorStop(1, `rgba(150,180,220,${haze*.85})`);
+      ctx.fillStyle = hg; ctx.fillRect(0,0,W,H);
+    }
   }
 
   function draw(){
@@ -1422,6 +1500,8 @@
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = '#030208';
     ctx.fillRect(0,0,W,H);
+    // once the photographs fully cover the screen, the space scene no longer needs drawing
+    if(t > MON0 + 1.3) return;
 
     // camera shake: builds as the rock destabilises, kicks hard at the blast, then settles
     const pre = clamp((t-HEAT)/(BANG-HEAT), 0, 1), post = t > BANG ? Math.exp(-(t-BANG)*2.2) : 0;
@@ -1496,10 +1576,48 @@
   }
 
   // words fly in, hold, then fly out past the camera as the journey begins; replay appears once we reach Earth
+  const monRoot = document.getElementById('monuments'), tlFill = document.getElementById('tlFill');
+  const monSlides = MONUMENTS.map((m, i) => {
+    const el = document.createElement('div');
+    el.className = m.tall ? 'mon tall' : 'mon';
+    el.innerHTML = `${m.tall ? '<img class="backdrop" alt="" aria-hidden="true" decoding="async">' : ''}<div class="frame"><img alt="${m.nm}" decoding="async"></div>
+      <div class="cap"><div class="yr">${m.yr}</div><div class="nm">${m.nm}</div><div class="pl">${m.pl}</div><div class="cr">Photo: ${m.cr} · Wikimedia Commons</div></div>`;
+    monRoot.appendChild(el);
+    return {el, frame: el.querySelector('.frame'), imgs: el.querySelectorAll('img'), m, dir: i % 2 ? -1 : 1, loaded: false};
+  });
+  function preloadMonuments(){
+    for(const s of monSlides) if(!s.loaded){ s.imgs.forEach(im => im.src = `monuments/${s.m.img}.jpg`); s.loaded = true; }
+  }
+
+  // each photo gets a slow orbit-like move: perspective swing, push-in and drift (tall subjects tilt upward instead)
+  function updateMonuments(){
+    const rootA = smooth(MON0, MON0 + 1.1, t);
+    monRoot.style.opacity = rootA;
+    if(rootA <= 0){ return; }
+    tlFill.style.width = `${clamp((t - MON0)/(MON_END - MON0), 0, 1)*100}%`;
+    monSlides.forEach((s, i) => {
+      const start = MON0 + i*MON_STEP, last = i === monSlides.length - 1;
+      const a = smooth(start, start + MON_FADE, t) * (last ? 1 : 1 - smooth(start + MON_STEP, start + MON_STEP + MON_FADE, t));
+      s.el.style.opacity = a;
+      s.el.classList.toggle('on', a > .5 && t < start + MON_STEP + (last ? 999 : 0));
+      if(a <= 0) return;
+      const p = clamp((t - start)/(MON_STEP + MON_FADE*2), 0, 1.6);
+      const d = s.dir;
+      if(s.m.tall || s.m.up){
+        const rx = lerp(9, -5, p) * (s.m.up ? -1 : 1);
+        s.frame.style.transform = `translate3d(${d*lerp(-1.5,1.5,p)}%, ${lerp(5,-4,p)}%, 0) rotateX(${rx}deg) rotateY(${d*lerp(-3,3,p)}deg) scale(${lerp(1.02,1.16,p)})`;
+      } else {
+        s.frame.style.transform = `translate3d(${d*lerp(4,-4,p)}%, ${lerp(1.5,-1.5,p)}%, 0) rotateY(${d*lerp(-9,7,p)}deg) rotateX(${lerp(2,-1,p)}deg) scale(${lerp(1.04,1.18,p)})`;
+      }
+    });
+  }
+
   function stage(){
+    if(t > REVEAL + 2) preloadMonuments();
+    updateMonuments();
     if(t > TITLE){ overlay.classList.add('show'); document.body.classList.add('titling'); }
     if(t > DEPART) overlay.classList.add('depart');
-    if(t > FINAL) document.body.classList.add('done');
+    if(t > MON_END + 2) document.body.classList.add('done');
     clock.innerHTML = clockText();
   }
 
