@@ -1844,7 +1844,7 @@
   function stage(){
     if(t > REVEAL + 2) preloadMonuments();
     updateMonuments();
-    Music.update(t);
+    try { Music.update(t); } catch(e) {}
     planetCredit.classList.toggle('on', t > PLAN0 - .3 && t < DIVE0 + .4);
     if(t > TITLE){ overlay.classList.add('show'); document.body.classList.add('titling'); }
     if(t > DEPART) overlay.classList.add('depart');
@@ -1874,15 +1874,16 @@
   }
 
   const gate = document.getElementById('gate'), soundBtn = document.getElementById('soundBtn');
+  // the picture always starts; sound is best-effort (some embedded/sandboxed pages block audio)
   function begin(){
     gate.classList.add('gone');
-    Music.start();
     init();
     started = true;
+    try { Music.start(); } catch(e) {}
     if(matchMedia('(prefers-reduced-motion: reduce)').matches) skipToEnd();
   }
   document.getElementById('gateBtn').addEventListener('click', begin);
-  document.getElementById('againBtn').addEventListener('click', () => { Music.start(); init(); });
+  document.getElementById('againBtn').addEventListener('click', () => { init(); try { Music.start(); } catch(e) {} });
   document.getElementById('skipBtn').addEventListener('click', skipToEnd);
   soundBtn.addEventListener('click', () => {
     const on = Music.toggle();
