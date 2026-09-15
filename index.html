@@ -213,9 +213,9 @@
   const FLASH_PEAK = .72, OPEN_FADE = 1.1;
   // journey after the title: words leave, zoom into the galaxy, planets fly past, arrive at Earth
   // the title holds for the length of the narration, then the journey runs at a quicker pace
-  const DEPART = TITLE + 6.0, ZOOM0 = DEPART + .2, GAL_IN = ZOOM0 + 3.8, PLAN0 = GAL_IN + 1.6, EARTH0 = PLAN0 + 4.0, FINAL = EARTH0 + 3.4;
+  const DEPART = TITLE + 6.0, ZOOM0 = DEPART + .3, GAL_IN = ZOOM0 + 5.5, PLAN0 = GAL_IN + 2.4, EARTH0 = PLAN0 + 5.2, FINAL = EARTH0 + 4.8;
   // dive through Earth's clouds, then humanity's great structures from oldest to newest
-  const DIVE0 = FINAL + .8, DIVE1 = DIVE0 + 1.9, MON0 = DIVE1 - .4, MON_STEP = 1.75, MON_FADE = .35;
+  const DIVE0 = FINAL + 1.6, DIVE1 = DIVE0 + 2.4, MON0 = DIVE1 - .5, MON_STEP = 1.75, MON_FADE = .35;
 
   // photos: Wikimedia Commons, credited on screen per their licences
   const MONUMENTS = [
@@ -518,6 +518,7 @@
     shards = []; streaks = []; puffs = [];
 
     if(!sky) sky = bakeSky();
+    queueJourney();
   }
 
   function spawnStreak(){
@@ -1139,16 +1140,13 @@
     im.src = url;
   }
 
-  function* bakeGalaxySprite(){
-    const fbm = makeNoise();
-    yield;
-    J.galaxy = bakeGalaxy(LITE ? 360 : 560, 'spiral', .58, fbm, 4.2);
-  }
 
   function queueJourney(){
     if(journeyQueued) return;
     journeyQueued = true;
-    bakeJobs.push(bakeGalaxySprite());
+    const img = src => { const im = new Image(); im.decoding = 'async'; im.src = src; im.decode?.().catch(() => {}); return im; };
+    J.milkyway = img('planets/milkyway.jpg');
+    J.gaia = img('planets/gaia_sky.jpg');
     const sm = LITE ? '_sm' : '';
     loadTexture('earthDay', `planets/earth_day${sm}.jpg`);
     loadTexture('earthClouds', `planets/earth_clouds${sm}.jpg`);
@@ -1207,7 +1205,7 @@
   }
 
   function sunScreen(){
-    const move = ease(clamp((t - PLAN0 + .5)/3.8, 0, 1));
+    const move = ease(clamp((t - PLAN0 + .6)/5, 0, 1));
     const exitE = ease(clamp((t - EARTH0)/(FINAL - EARTH0), 0, 1));
     return [CX - S*(.34*move + .55*exitE), CY - S*(.26*move + .2*exitE)];
   }
@@ -1264,11 +1262,22 @@
     const Wd = Math.round(size*ringW), Ht = Math.round(size*ringH);
     const buf = bodyBuffer(key, Wd, Ht), d = buf.img.data, half = size/2, cx = Wd/2, cy = Ht/2;
     const [lx, ly, lz] = SUN_L;
-    const spin = B.base + t*B.spin, cs = Math.cos(spin), sn = Math.sin(spin);
+    const spin = B.base, cs = Math.cos(spin), sn = Math.sin(spin);
     const ct = Math.cos(B.tilt), st = Math.sin(B.tilt);
     const el = B.elev || 0, ce = Math.cos(el), se = Math.sin(el);
     const TW = T.w, TH = T.h, TD = T.d, TWO_PI = Math.PI*2;
     const tiltS = Math.sin(.42), tiltC = Math.cos(.42);
+    // bilinear texture sample (wraps in longitude) so surfaces stay crisp and smooth, never blocky
+    const px = [0, 0, 0];
+    const sample = (u, v) => {
+      const fu = u*TW - .5, fv = clamp(v*TH - .5, 0, TH - 1.001);
+      const iu = Math.floor(fu), iv = fv | 0, wu = fu - iu, wv = fv - iv;
+      const u0 = (iu % TW + TW) % TW, u1 = (u0 + 1) % TW, r0 = iv*TW, r1 = (iv + 1)*TW;
+      for(let c=0;c<3;c++){
+        const a = TD[(r0+u0)*4+c], b = TD[(r0+u1)*4+c], d0 = TD[(r1+u0)*4+c], d1 = TD[(r1+u1)*4+c];
+        px[c] = ((a + (b-a)*wu)*(1-wv) + (d0 + (d1-d0)*wu)*wv)/255;
+      }
+    };
     for(let j=0;j<Ht;j++){
       const y = (j + .5 - cy)/half;
       for(let i=0;i<Wd;i++){
@@ -1283,20 +1292,26 @@
           const ox = ax*cs - az*sn, oz = ax*sn + az*cs;
           const lat = Math.asin(clamp(-ay, -1, 1));
           const lon = Math.atan2(oz, -ox);
-          const ui = ((lon/TWO_PI + .5)*TW) | 0, vi = Math.min(TH-1, ((.5 - lat/Math.PI)*TH) | 0);
-          const k = (vi*TW + Math.min(TW-1, ui))*4;
+          sample(lon/TWO_PI + .5, .5 - lat/Math.PI);
           const ndl = x*lx + y*ly + nz*lz;
           let lit;
-          if(B.diffuse === 'dust') lit = ndl > 0 ? (ndl*.35 + .65*(2*ndl/(ndl + Math.max(.05, nz)))) : 0;
-          else lit = Math.max(0, ndl)*1.05;
-          lit = lit*B.gain + .01;
-          const limb = B.limb ? (.5 + .5*Math.pow(nz, .55)) : 1;
-          pr = TD[k]/255*lit*limb; pg = TD[k+1]/255*lit*limb; pb = TD[k+2]/255*lit*limb;
-          if(B.haze){
-            const rim = Math.pow(1 - nz, 3) * Math.max(0, ndl + .25);
-            pr += B.haze[0]*rim*.5; pg += B.haze[1]*rim*.5; pb += B.haze[2]*rim*.5;
+          if(B.diffuse === 'dust'){
+            // airless rock (Moon): flat, bright lighting right up to a sharp terminator
+            lit = ndl > 0 ? (ndl*.3 + .7*(2*ndl/(ndl + Math.max(.05, nz)))) : 0;
+          } else if(B.limb){
+            // gas giants: deep atmospheres soften the terminator and darken toward the edge
+            lit = Math.max(0, (ndl + .07)/1.07);
+          } else {
+            lit = Math.max(0, ndl);
           }
-          pr = 1 - Math.exp(-pr*1.6); pg = 1 - Math.exp(-pg*1.6); pb = 1 - Math.exp(-pb*1.6);
+          lit = lit*B.gain + .008;
+          const limb = B.limb ? (.42 + .58*Math.pow(nz, .45)) : (.82 + .18*nz);
+          pr = px[0]*lit*limb; pg = px[1]*lit*limb; pb = px[2]*lit*limb;
+          if(B.haze){
+            const rim = Math.pow(1 - nz, 3.5) * smooth(-.25, .4, ndl);
+            pr += B.haze[0]*rim*.4; pg += B.haze[1]*rim*.4; pb += B.haze[2]*rim*.4;
+          }
+          pr = 1 - Math.exp(-pr*1.5); pg = 1 - Math.exp(-pg*1.5); pb = 1 - Math.exp(-pb*1.5);
           pa = clamp((1 - Math.sqrt(r2))*half, 0, 1);
           pz = nz;
         }
@@ -1325,16 +1340,26 @@
     return buf;
   }
 
+  // each body is shaded once at high resolution (while the page waits for the tap), then simply drawn
+  const BODY_SIZE = LITE ? 300 : 600;
+  const baked = {};
+  function bakeNextBody(){
+    for(const key of Object.keys(BODIES)){
+      const B = BODIES[key];
+      if(baked[key] || !TEX[B.tex] || (B.rings && !TEX[B.rings])) continue;
+      renderBody(key, BODY_SIZE);
+      baked[key] = true;
+      return true;
+    }
+    return false;
+  }
   function drawBody(key, fb){
     const B = BODIES[key];
     if(!fb.active || !TEX[B.tex]) return;
     const kw = B.rings ? 2.35 : 1, kh = B.rings ? 1.25 : 1;
     const w = fb.r*2*kw, h = fb.r*2*kh;
     if(fb.x + w/2 < 0 || fb.x - w/2 > W || fb.y + h/2 < 0 || fb.y - h/2 > H) return;
-    const cap = LITE ? 200 : 360;
-    const size = clamp(Math.round(fb.r*2*(LITE ? .7 : 1)/12)*12, 36, cap);
-    const buf = bodyBuf[key];
-    if(!buf || buf.cv.height !== Math.round(size*kh) || (buf.n++ % (LITE ? 2 : 1)) === 0) renderBody(key, size);
+    if(!baked[key]){ renderBody(key, BODY_SIZE); baked[key] = true; }
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = fb.fade;
     ctx.imageSmoothingEnabled = true;
@@ -1442,38 +1467,43 @@
     const skyA = 1 - smooth(.55, .95, u);
     if(skyA > 0) drawSky(skyA, 1 + zf*12);
 
-    if(u < 1 && J.galaxy){
-      const gs = S*(.09 + zf*16);
-      const ga = smooth(0, .12, u) * (1 - smooth(.78, 1, u));
+    const mw = J.milkyway;
+    if(u < 1 && mw && mw.complete && mw.naturalWidth){
+      // our galaxy seen face-on (NASA/JPL-Caltech/ESO/R. Hurt), approached along a slight tilt toward the Sun's position
+      const gs = S*(.16 + zf*18);
+      const ga = smooth(0, .12, u) * (1 - smooth(.62, .92, u)) * .92;
+      const sunOff = ease(u) * gs * .26;
       ctx.globalCompositeOperation = 'lighter';
       ctx.save();
-      ctx.translate(CX, CY); ctx.rotate(-.5 + t*.02);
+      ctx.translate(CX + sunOff*.35, CY + sunOff); ctx.rotate(-.35 + t*.012); ctx.scale(1, lerp(.72, .95, ease(u)));
       ctx.globalAlpha = ga;
-      ctx.drawImage(J.galaxy, -gs/2, -gs/2, gs, gs);
-      ctx.globalAlpha = ga*.8;
-      ctx.drawImage(J.galaxy, -gs/2, -gs/2, gs, gs);
+      ctx.drawImage(mw, -gs/2, -gs/2, gs, gs);
       ctx.restore();
       ctx.globalAlpha = 1;
       const coreA = smooth(.5, .9, u) * (1 - smooth(.92, 1.08, u + (t-GAL_IN)*.2));
       if(coreA > 0){
         const cg = ctx.createRadialGradient(CX,CY,0,CX,CY,Math.max(W,H)*.8);
-        cg.addColorStop(0,`rgba(255,226,190,${.28*coreA})`);
-        cg.addColorStop(.5,`rgba(170,150,220,${.1*coreA})`);
+        cg.addColorStop(0,`rgba(255,226,190,${.08*coreA})`);
+        cg.addColorStop(.5,`rgba(170,150,220,${.03*coreA})`);
         cg.addColorStop(1,'rgba(40,30,80,0)');
         ctx.fillStyle = cg; ctx.fillRect(0,0,W,H);
       }
     }
 
     // 2. inside the galaxy: faint dust glow and stars streaming past
-    const insideA = smooth(.6, 1, u);
+    const insideA = smooth(.72, 1, u);
     if(insideA > 0){
-      const dustA = insideA * (1 - smooth(PLAN0, PLAN0 + 3, t)) * .5;
-      if(dustA > 0){
-        const span = Math.max(W,H)*3;
+      // inside the disc: the real Milky Way band as mapped by ESA's Gaia, drifting past as we travel
+      const dustA = insideA * (1 - smooth(PLAN0 + 1, PLAN0 + 4, t)) * .8;
+      const gaia = J.gaia;
+      if(dustA > 0 && gaia && gaia.complete && gaia.naturalWidth){
+        const bh = Math.max(W,H)*1.25, bw = bh*2;
+        const drift = ((t - ZOOM0)*.018) % 1;
         ctx.globalCompositeOperation = 'lighter';
         ctx.globalAlpha = dustA;
-        ctx.save(); ctx.translate(CX, CY); ctx.rotate(t*.015);
-        ctx.drawImage(sky.bg, -span/2, -span/2, span, span);
+        ctx.save(); ctx.translate(CX, CY); ctx.rotate(-.42);
+        ctx.drawImage(gaia, -bw*drift - bw/2, -bh/2, bw, bh);
+        ctx.drawImage(gaia, -bw*drift + bw/2, -bh/2, bw, bh);
         ctx.restore();
         ctx.globalAlpha = 1;
       }
@@ -1484,10 +1514,10 @@
     drawSun(1);
 
     const bodies = [
-      {key:'mars',    fb: flyby(PLAN0 - .15, PLAN0 + 1.8, 16, .45, .42, .16, .07)},
-      {key:'jupiter', fb: flyby(PLAN0 + .75, PLAN0 + 3.4, 18, .5, -.62, .22, .42)},
-      {key:'saturn',  fb: flyby(PLAN0 + 1.9, PLAN0 + 4.3, 18, .48, .66, -.28, .34)},
-      {key:'moon',    fb: flyby(EARTH0 - .5, EARTH0 + 2.2, 14, .38, .36, -.18, .09)}
+      {key:'mars',    fb: flyby(PLAN0 - .2, PLAN0 + 2.3, 16, .45, .42, .16, .07)},
+      {key:'jupiter', fb: flyby(PLAN0 + 1.0, PLAN0 + 4.4, 18, .5, -.62, .22, .42)},
+      {key:'saturn',  fb: flyby(PLAN0 + 2.5, PLAN0 + 5.6, 18, .48, .66, -.28, .34)},
+      {key:'moon',    fb: flyby(EARTH0 - .6, EARTH0 + 2.9, 14, .38, .36, -.18, .09)}
     ];
     const s = clamp((t - EARTH0)/(FINAL - EARTH0), 0, 1);
     const ez = 1 + 11*Math.pow(1 - s, 2.6);
@@ -1841,11 +1871,15 @@
   })();
 
   const planetCredit = document.getElementById('planetCredit');
+  const MW_CREDIT = 'Milky Way: NASA/JPL-Caltech/ESO/R. Hurt, CC BY 4.0 · Star map: ESA/Gaia/DPAC, CC BY-SA 3.0 IGO';
+  const PLANET_CREDIT = 'Planet imagery: NASA · JPL · USGS · Saturn map: Solar System Scope, CC BY 4.0';
   function stage(){
     if(t > REVEAL + 2) preloadMonuments();
     updateMonuments();
     try { Music.update(t); } catch(e) {}
-    planetCredit.classList.toggle('on', t > PLAN0 - .3 && t < DIVE0 + .4);
+    const creditText = t < PLAN0 - .3 ? MW_CREDIT : PLANET_CREDIT;
+    if(planetCredit.textContent !== creditText) planetCredit.textContent = creditText;
+    planetCredit.classList.toggle('on', t > ZOOM0 + .5 && t < DIVE0 + .4);
     if(t > TITLE){ overlay.classList.add('show'); document.body.classList.add('titling'); }
     if(t > DEPART) overlay.classList.add('depart');
     if(t > MON_END + 2) document.body.classList.add('done');
@@ -1863,7 +1897,8 @@
       dprCap = Math.max(1, dprCap - .5); perfChecks++; slowAvg = 1/60; resize();
     }
     // build the galaxy, planets and Earth in small slices during the lighter starfield/title scenes
-    if(t > REVEAL + 1){ queueJourney(); if(bakeJobs.length) runBakes(LITE ? 4 : 6); }
+    // shade the planets while nothing heavy is on screen: before the tap, or during the calm title scene
+    if(!started || (t > REVEAL + 1 && t < ZOOM0)) bakeNextBody();
     step(dt); draw(); stage();
     requestAnimationFrame(frame);
   }
