@@ -90,6 +90,7 @@
     0%{transform:translate(0,0)} 25%{transform:translate(-3%,2%)} 50%{transform:translate(2%,-3%)} 75%{transform:translate(-2%,-1%)} 100%{transform:translate(0,0)}
   }
   @media (prefers-reduced-motion: reduce){ .grain{animation:none} }
+  @media (pointer: coarse){ .grain{display:none} }
 </style>
 
 <canvas id="cv"></canvas>
@@ -124,9 +125,13 @@
   const HEAT = 3.2, BANG = 5.0, LIGHT = 7.5, WHITE = 8.3, REVEAL = 8.5, CALM = 9.7, TITLE = 10.4, END = 12.4;
   const FLASH_PEAK = .72, OPEN_FADE = 1.1, LANDED = TITLE + 4;
 
+  // phones and tablets get a lighter render: fewer particles, smaller rock buffer, lower canvas resolution
+  const LITE = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 700;
+  let dprCap = LITE ? 1.5 : 2;
+
   let W, H, DPR, CX, CY, S;
   function resize(){
-    DPR = Math.min(devicePixelRatio || 1, 2);
+    DPR = Math.min(devicePixelRatio || 1, dprCap);
     W = cv.width = Math.max(1, innerWidth) * DPR;
     H = cv.height = Math.max(1, innerHeight) * DPR;
     CX = W/2; CY = H/2; S = Math.min(W,H);
@@ -352,7 +357,7 @@
     const sprites = STAR_TEMPS.map(col => ({spike: starSprite(col, true), soft: starSprite(col, false)}));
 
     const starList = [];
-    for(let i=0;i<4200;i++){
+    for(let i=0;i<(LITE ? 2400 : 4200);i++){
       let u, v;
       if(Math.random() < .5){ u = rand(-.8,.8); v = rand(-.8,.8); }
       else {
@@ -394,7 +399,7 @@
     orbSparks = [];
 
     warp = [];
-    for(let i=0;i<520;i++){
+    for(let i=0;i<(LITE ? 320 : 520);i++){
       const a = rand(Math.PI*2), r = rand(.08,1);
       warp.push({x:Math.cos(a)*r, y:Math.sin(a)*r, z:rand(.05,1), hue:Math.random()});
     }
@@ -409,12 +414,12 @@
     streaks.push({
       a, r: rand(0, S*.04), v: rand(.15,1.1)*S, acc: rand(1.2,2.6),
       w: rand(.5,2.2), life: 0,
-      c: warm < .5 ? [255,245,230] : warm < .8 ? [255,190,120] : [170,200,255]
+      ci: warm < .5 ? 0 : warm < .8 ? 1 : 2
     });
   }
 
   function explode(){
-    for(let i=0;i<1500;i++) spawnStreak();
+    for(let i=0;i<(LITE ? 800 : 1500);i++) spawnStreak();
     for(let i=0;i<70;i++){
       const a = rand(Math.PI*2), sp = rand(.15,.8)*S;
       const sz = Math.pow(Math.random(),2)*S*.028 + S*.004;
@@ -459,7 +464,7 @@
     if(prev < BANG && t >= BANG) explode();
 
     if(t > BANG && t < LIGHT + .4){
-      spawnAcc += dt * 1100;
+      spawnAcc += dt * (LITE ? 550 : 1100);
       while(spawnAcc > 1){ spawnStreak(); spawnAcc--; }
     }
     const lim = Math.hypot(W,H)*.6;
@@ -593,7 +598,7 @@
     };
   }
 
-  const MW = 512, MH = 256;
+  const MW = LITE ? 320 : 512, MH = LITE ? 160 : 256;
   function bakeRockMaps(){
     const n3 = makeNoise3();
     const craters = [];
@@ -698,7 +703,7 @@
     const cx = CX + rand(-jit,jit), cy = CY + rand(-jit,jit);
     const EXT = 1.5;
 
-    const RS = Math.min(340, Math.ceil(R*2*EXT));
+    const RS = Math.min(LITE ? 180 : 340, Math.ceil(R*2*EXT));
     if(rockCanvas.width !== RS){ rockCanvas.width = rockCanvas.height = RS; rockImg = rockCtx.createImageData(RS, RS); }
     const px = rockImg.data;
 
@@ -846,34 +851,55 @@
       ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
     }
 
+    // grouped into 3 colours x 5 depth bands, so the whole field is 15 draw calls
+    const bands = 5, paths = Array.from({length: 3*bands}, () => new Path2D());
     for(const p of warp){
       const z0 = p.z + .015 + sp*.12;
       const x1 = CX + p.x/p.z*F, y1 = CY + p.y/p.z*F;
       const x0 = CX + p.x/z0*F,  y0 = CY + p.y/z0*F;
-      const near = 1 - p.z;
-      const a = Math.pow(near, 1.6)*.32*k;
-      ctx.strokeStyle = p.hue < .25 ? `rgba(200,160,255,${a})` : p.hue < .45 ? `rgba(150,190,255,${a})` : `rgba(235,235,255,${a})`;
+      const band = Math.min(bands-1, ((1 - p.z)*bands)|0);
+      const ci = p.hue < .25 ? 0 : p.hue < .45 ? 1 : 2;
+      const path = paths[ci*bands + band];
+      path.moveTo(x0,y0); path.lineTo(x1,y1);
+    }
+    const cols = ['200,160,255','150,190,255','235,235,255'];
+    for(let ci=0;ci<3;ci++) for(let b=0;b<bands;b++){
+      const near = (b + .5)/bands;
+      ctx.strokeStyle = `rgba(${cols[ci]},${Math.pow(near, 1.6)*.32*k})`;
       ctx.lineWidth = (.3 + near*1.1) * DPR;
-      ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+      ctx.stroke(paths[ci*bands + b]);
     }
   }
 
+  // streaks are grouped by colour and thickness so thousands of them go out in a handful of draw calls
+  const STREAK_COLS = [[255,245,230],[255,190,120],[170,200,255]];
+  const streakBuckets = Array.from({length: 6}, () => ({tail: new Path2D(), head: new Path2D()}));
   function drawStreaks(){
     ctx.globalCompositeOperation = 'lighter';
     ctx.lineCap = 'round';
+    for(let b=0;b<6;b++){ streakBuckets[b].tail = new Path2D(); streakBuckets[b].head = new Path2D(); }
     for(const s of streaks){
       const ca = Math.cos(s.a), sa = Math.sin(s.a);
       const len = Math.min(s.v*.14, S*.45);
       const hx = CX + ca*s.r, hy = CY + sa*s.r;
-      const tx = CX + ca*Math.max(0,s.r-len), ty = CY + sa*Math.max(0,s.r-len);
-      const fadeIn = clamp(s.life*6, 0, 1);
-      ctx.strokeStyle = `rgba(${s.c},${.12*fadeIn})`;
-      ctx.lineWidth = s.w*.8*DPR;
-      ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(hx,hy); ctx.stroke();
+      const back = Math.max(0, s.r-len);
+      const tx = CX + ca*back, ty = CY + sa*back;
       const mx = lerp(tx,hx,.75), my = lerp(ty,hy,.75);
-      ctx.strokeStyle = `rgba(${s.c},${.42*fadeIn})`;
-      ctx.lineWidth = s.w*.6*DPR;
-      ctx.beginPath(); ctx.moveTo(mx,my); ctx.lineTo(hx,hy); ctx.stroke();
+      const fadeIn = clamp(s.life*6, 0, 1);
+      if(fadeIn < 1){
+        ctx.strokeStyle = `rgba(${STREAK_COLS[s.ci]},${.42*fadeIn})`;
+        ctx.lineWidth = s.w*.6*DPR;
+        ctx.beginPath(); ctx.moveTo(mx,my); ctx.lineTo(hx,hy); ctx.stroke();
+        continue;
+      }
+      const bk = streakBuckets[s.ci*2 + (s.w > 1.35 ? 1 : 0)];
+      bk.tail.moveTo(tx,ty); bk.tail.lineTo(hx,hy);
+      bk.head.moveTo(mx,my); bk.head.lineTo(hx,hy);
+    }
+    for(let b=0;b<6;b++){
+      const col = STREAK_COLS[b>>1], w = (b & 1) ? 1.8 : .9;
+      ctx.strokeStyle = `rgba(${col},.12)`; ctx.lineWidth = w*.8*DPR; ctx.stroke(streakBuckets[b].tail);
+      ctx.strokeStyle = `rgba(${col},.42)`; ctx.lineWidth = w*.6*DPR; ctx.stroke(streakBuckets[b].head);
     }
   }
 
@@ -1056,9 +1082,16 @@
     clock.innerHTML = clockText();
   }
 
-  let last = performance.now();
+  // real-time clock: slow frames skip ahead instead of stretching the animation into slow motion
+  let last = performance.now(), slowAvg = 1/60, perfChecks = 0;
   function frame(now){
-    const dt = clamp((now-last)/1000, 0, 1/20); last = now;
+    const raw = (now-last)/1000; last = now;
+    const dt = clamp(raw, 0, .1);
+    slowAvg = lerp(slowAvg, dt, .05);
+    // if the device still can't keep up, drop canvas resolution a notch (at most twice)
+    if(t > 1.5 && slowAvg > 1/34 && perfChecks < 2 && dprCap > 1){
+      dprCap = Math.max(1, dprCap - .5); perfChecks++; slowAvg = 1/60; resize();
+    }
     step(dt); draw(); stage();
     requestAnimationFrame(frame);
   }
