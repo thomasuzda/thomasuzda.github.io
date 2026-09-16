@@ -1876,12 +1876,12 @@
       const ng = ac.createGain(); ng.gain.setValueAtTime(.9, now); ng.gain.exponentialRampToValueAtTime(.001, now + 2.8);
       n.connect(f); f.connect(ng); ng.connect(bus); ng.connect(verbIn); n.start(now); n.stop(now + 3);
     }
-    function whoosh(dur){
+    function whoosh(dur, peak = .5){
       const now = ac.currentTime;
       const n = ac.createBufferSource(); n.buffer = noiseBuffer(dur + .5);
       const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2;
       f.frequency.setValueAtTime(300, now); f.frequency.exponentialRampToValueAtTime(5000, now + dur);
-      const g = ac.createGain(); g.gain.setValueAtTime(.001, now); g.gain.exponentialRampToValueAtTime(.5, now + dur*.9); g.gain.exponentialRampToValueAtTime(.001, now + dur + .4);
+      const g = ac.createGain(); g.gain.setValueAtTime(.001, now); g.gain.exponentialRampToValueAtTime(peak, now + dur*.9); g.gain.exponentialRampToValueAtTime(.001, now + dur + .4);
       n.connect(f); f.connect(g); g.connect(bus); g.connect(verbIn); n.start(now); n.stop(now + dur + .5);
     }
     function playNarration(){
@@ -1903,11 +1903,12 @@
       let chord, pad, drone, arp, pulse, noise, cutoff, arpRate;
       if(t < BANG){ chord = 'Am'; pad = .5; drone = .55; arp = 0; pulse = 0; cutoff = 420 + 500*(t/BANG); arpRate = 0;
         noise = smooth(HEAT - .6, BANG, t)*.35; }
-      else if(t < TITLE){ chord = 'F'; pad = .8; drone = .7; arp = .2; pulse = 0; noise = 0; cutoff = 1500; arpRate = .22; }
-      else if(t < ZOOM0){ chord = t < TITLE + 3 ? 'Dm' : 'F'; pad = .55; drone = .45; arp = .12; pulse = 0; noise = 0; cutoff = 900; arpRate = .3; }
-      else if(t < PLAN0){ chord = 'C'; pad = .8; drone = .6; arp = .5; pulse = 0; noise = smooth(ZOOM0, GAL_IN, t)*.18; cutoff = 1800; arpRate = .16; }
-      else if(t < EARTH0){ chord = 'G'; pad = .85; drone = .6; arp = .55; pulse = .25; noise = .06; cutoff = 2200; arpRate = .14; }
-      else if(t < DIVE0){ chord = 'Em'; pad = .9; drone = .55; arp = .4; pulse = 0; noise = .04; cutoff = 2000; arpRate = .2; }
+      // after the blast the score rests: warm major chords, soft slow bells, no beat
+      else if(t < TITLE){ chord = 'F'; pad = .55; drone = .4; arp = .1; pulse = 0; noise = 0; cutoff = 1000; arpRate = .5; }
+      else if(t < ZOOM0){ chord = t < TITLE + 3 ? 'C' : 'F'; pad = .5; drone = .32; arp = .08; pulse = 0; noise = 0; cutoff = 850; arpRate = .6; }
+      else if(t < PLAN0){ chord = 'F'; pad = .6; drone = .38; arp = .22; pulse = 0; noise = smooth(ZOOM0, GAL_IN, t)*.08; cutoff = 1300; arpRate = .34; }
+      else if(t < EARTH0){ chord = 'C'; pad = .62; drone = .38; arp = .26; pulse = 0; noise = .03; cutoff = 1500; arpRate = .3; }
+      else if(t < DIVE0){ chord = 'F'; pad = .66; drone = .36; arp = .2; pulse = 0; noise = .02; cutoff = 1400; arpRate = .42; }
       // the dive home: the music turns to triumph as the story of God reaches its fulfilment
       else if(t < MON0){ chord = 'C'; pad = 1; drone = .85; arp = .55; pulse = .5; noise = smooth(DIVE0, DIVE1, t)*.45; cutoff = 3200; arpRate = .16; }
       else if(t < STORY_END + 1.5){
@@ -1928,7 +1929,7 @@
 
       if(crossed(BANG)) boom();
       if(crossed(TITLE + .02)) playNarration();
-      if(crossed(ZOOM0)) whoosh(2.2);
+      if(crossed(ZOOM0)) whoosh(2.6, .18);
       if(crossed(DIVE0 + .2)) whoosh(1.6);
 
       // schedule arpeggio notes and montage beats a little ahead on the audio clock
