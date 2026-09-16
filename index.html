@@ -1781,6 +1781,8 @@
   const Music = (() => {
     let ac = null, master, bus, verb, verbIn, padFilter, padGain, padSwell, droneGain, droneFilter, noiseGain, noiseFilter, arpGain, pulseGain;
     let pads = [], narrBuf = null, narrSrc = null, muted = false;
+    // the sung score: real Gregorian chant, one voice for the journey and one for the story
+    const chant = {journey: {url: 'audio/chant_journey.m4a'}, story: {url: 'audio/chant_story.m4a'}};
     let prevT = -1, nextArp = 0, arpI = 0, nextPulse = 0, chordName = '';
     const A2 = 110, hz = s => A2 * Math.pow(2, s/12);
     // voicings as semitones above A2
@@ -1869,6 +1871,12 @@
       pulseGain = ac.createGain(); pulseGain.gain.value = 0; pulseGain.connect(bus);
 
       fetch('audio/narration.m4a').then(r => r.arrayBuffer()).then(b => ac.decodeAudioData(b)).then(buf => { narrBuf = buf; }).catch(() => {});
+      for(const c of Object.values(chant)){
+        c.gain = ac.createGain(); c.gain.gain.value = 0;
+        c.gain.connect(master); c.gain.connect(verbIn);
+        fetch(c.url).then(r => r.arrayBuffer()).then(b => ac.decodeAudioData(b))
+          .then(buf => { c.buf = buf; if(c.wanted) startChant(c); }).catch(() => {});
+      }
     }
 
     function setChord(name, glide = 1.2){
@@ -1934,30 +1942,43 @@
     }
     function stopNarration(){ if(narrSrc){ try{ narrSrc.stop(); }catch(e){} narrSrc = null; } }
 
+    // the chant loops quietly under the picture; it fades in when its section begins and out when it ends
+    function startChant(c){
+      c.wanted = true;
+      if(!c.buf || c.src) return;
+      c.src = ac.createBufferSource();
+      c.src.buffer = c.buf; c.src.loop = true;
+      c.src.connect(c.gain); c.src.start();
+      c.gain.gain.cancelScheduledValues(ac.currentTime);
+      c.gain.gain.setValueAtTime(.0001, ac.currentTime);
+      c.gain.gain.linearRampToValueAtTime(c.level || .85, ac.currentTime + 2.5);
+    }
+    function stopChant(c, fade = 2){
+      c.wanted = false;
+      if(!c.src) return;
+      const src = c.src; c.src = null;
+      c.gain.gain.cancelScheduledValues(ac.currentTime);
+      c.gain.gain.setTargetAtTime(0, ac.currentTime, fade/3);
+      setTimeout(() => { try{ src.stop(); }catch(e){} }, (fade + 1)*1000);
+    }
+    function stopAllChant(){ for(const c of Object.values(chant)) stopChant(c, .3); }
+
     function update(t){
       if(!ac) return;
       const crossed = x => prevT < x && t >= x;
-      if(t < prevT - .5){ stopNarration(); chordName = ''; }
+      if(t < prevT - .5){ stopNarration(); stopAllChant(); chordName = ''; }
 
       // sections of the score
       let chord, pad, drone, arp, pulse, noise, cutoff, arpRate;
       if(t < BANG){ chord = 'Am'; pad = .5; drone = .55; arp = 0; pulse = 0; cutoff = 420 + 500*(t/BANG); arpRate = 0;
         noise = smooth(HEAT - .6, BANG, t)*.35; }
-      // after the blast the score rests: warm major chords, soft slow bells, no beat
-      else if(t < DIVE0){
-        // one slow hymn carries the whole quiet stretch: a bell tone every few seconds over open chords
-        const bar = Math.floor((t - BANG)/CALM_BAR);
-        chord = CALM_SONG[bar % CALM_SONG.length];
-        const settled = smooth(BANG, BANG + 4, t), far = smooth(PLAN0, PLAN0 + 6, t);
-        pad = lerp(.3, .42, settled); drone = lerp(.3, .24, settled); arp = .075;
-        pulse = 0; noise = far*.02; cutoff = lerp(620, 900, settled); arpRate = 1.55;
-      }
-      // the dive home: the music turns to triumph as the story of God reaches its fulfilment
-      else if(t < MON0){ chord = 'C'; pad = 1; drone = .85; arp = .55; pulse = .5; noise = smooth(DIVE0, DIVE1, t)*.45; cutoff = 3200; arpRate = .16; }
-      else if(t < STORY_END + 1.5){
-        const idx = Math.floor((t - MON0)/(MON_STEP*2));
-        chord = MONTAGE[idx % MONTAGE.length]; pad = 1; drone = .85; arp = .7; pulse = .95; noise = 0; cutoff = 3200; arpRate = .125;
-      } else { chord = 'C'; pad = .75; drone = .4; arp = .2; pulse = 0; noise = 0; cutoff = 1500; arpRate = .3; }
+      // from the blast onward the synthesiser is silent; sung chant carries the rest of the film
+      else { chord = 'C'; pad = 0; drone = 0; arp = 0; pulse = 0; noise = 0; cutoff = 900; arpRate = 0; }
+
+      // the spare Kyrie rises after the light and runs through the journey; the Salve Regina takes over for the story
+      chant.journey.level = .8; chant.story.level = .95;
+      if(t < BANG + .6 || t > DIVE0 + 1) stopChant(chant.journey, 2.5); else startChant(chant.journey);
+      if(t < DIVE0 - 1.5 || t > STORY_END + 2) stopChant(chant.story, 3); else startChant(chant.story);
 
       // duck the music under the narrator
       const duck = ((t > LIGHT && t < LIGHT + 4.6) || narrating) ? .4 : 1;
@@ -2017,14 +2038,15 @@
   })();
 
   const planetCredit = document.getElementById('planetCredit');
+  const MUSIC_CREDIT = 'Music: “Kyrie eleison” — Schola Gregoriana · “Salve Regina” — Les Petits Chanteurs de Passy · both CC BY-SA 3.0, Wikimedia Commons';
   const PLANET_CREDIT = 'Planet imagery: NASA · JPL · USGS · Saturn map: Solar System Scope, CC BY 4.0';
   const EARTH_CREDIT = 'Earth: based on "EARTH" by Stéphane Agullo (sketchfab.com/sa3d), CC BY 4.0 · Moon: NASA';
-  const FILM_CREDIT = 'Paintings: Michelangelo · Caravaggio · Rembrandt · Leonardo · Fra Angelico · Velázquez · Rubens · El Greco · Perugino · Doré — public domain · Building photographs: Wikimedia Commons, credited per scene';
+  const FILM_CREDIT = 'Paintings: Michelangelo · Caravaggio · Rembrandt · Leonardo · Fra Angelico · Velázquez · Rubens · El Greco · Perugino · Doré — public domain · Building photographs: Wikimedia Commons, credited per scene · ' + MUSIC_CREDIT;
   function stage(){
     if(t > REVEAL + 2) preloadMonuments();
     updateMonuments();
     try { Music.update(t); } catch(e) {}
-    const creditText = t < EARTH0 - .8 ? PLANET_CREDIT : t < MON0 ? EARTH_CREDIT : FILM_CREDIT;
+    const creditText = t < EARTH0 - .8 ? PLANET_CREDIT + ' · ' + MUSIC_CREDIT : t < MON0 ? EARTH_CREDIT : FILM_CREDIT;
     if(planetCredit.textContent !== creditText) planetCredit.textContent = creditText;
     planetCredit.classList.toggle('on', (t > ZOOM0 + .5 && t < DIVE0 + .4) || (t > MON0 && t < MON0 + 6));
     if(t > TITLE){ overlay.classList.add('show'); document.body.classList.add('titling'); }
