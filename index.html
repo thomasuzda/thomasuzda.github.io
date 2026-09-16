@@ -219,45 +219,96 @@
 
   // one timeline in historical order: the events of salvation history (sacred paintings, all public domain)
   // and the great buildings at the date each was raised (photographs, Wikimedia Commons)
+  // Every scene in date order: the whole story first (Old Testament, then New), then the places by the year each was built.
   const SCENES = [
-    {f:'art/creation',            yr:'In the beginning', nm:'Creation',              ref:'Genesis 1:3',   why:'God speaks, and there is light'},
-    {f:'art/adam',                yr:'The first man',    nm:'Adam and Eve',          ref:'Genesis 2:7',   why:'Man made in the image of God · Michelangelo'},
-    {f:'art/fall',                yr:'The Fall',         nm:'Sin and the promise',   ref:'Genesis 3:15',  why:'God promises a Redeemer · Michelangelo'},
-    {f:'art/noah',                yr:'The Flood',        nm:'Noah',                  ref:'Genesis 9:13',  why:'A remnant saved, a covenant sealed · Doré'},
-    {f:'monuments/gobekli-tepe',  yr:'c. 9500 BC',       nm:'Göbekli Tepe',          ref:'Şanlıurfa, Türkiye',   why:'The oldest temple men ever raised'},
-    {f:'monuments/stonehenge',    yr:'c. 3000 BC',       nm:'Stonehenge',            ref:'Wiltshire, England',   why:'Stone raised to the heavens'},
-    {f:'monuments/great-pyramid', yr:'c. 2560 BC',       nm:'Great Pyramid of Giza', ref:'Giza, Egypt',          why:'Built while Abraham was yet to be called'},
-    {f:'art/abraham',             yr:'c. 1900 BC',       nm:'Abraham',               ref:'Genesis 22:13', why:'The father in faith; a son offered · Caravaggio'},
-    {f:'art/moses',               yr:'c. 1250 BC',       nm:'Moses',                 ref:'Exodus 20',     why:'The law given on the mountain · Rembrandt'},
-    {f:'art/exodus',              yr:'The Exodus',       nm:'Through the Sea',       ref:'Exodus 14:21',  why:'Passover: from slavery into freedom'},
-    {f:'art/david',               yr:'c. 1000 BC',       nm:'King David',            ref:'2 Samuel 7:16', why:'From his line the Messiah will come'},
-    {f:'art/elijah',              yr:'c. 860 BC',        nm:'Elijah',                ref:'1 Kings 18:38', why:'Fire from heaven turns hearts back'},
-    {f:'art/isaiah',              yr:'c. 740 BC',        nm:'Isaiah',                ref:'Isaiah 7:14',   why:'A virgin shall conceive · Michelangelo'},
-    {f:'art/jeremiah',            yr:'c. 600 BC',        nm:'Jeremiah',              ref:'Jeremiah 31:31',why:'A new and everlasting covenant · Rembrandt'},
-    {f:'art/ezekiel',             yr:'c. 590 BC',        nm:'Ezekiel',               ref:'Ezekiel 37:5',  why:'Dry bones live again · Doré'},
-    {f:'art/daniel',              yr:'c. 540 BC',        nm:'Daniel',                ref:'Daniel 7:13',   why:'He sees the Son of Man coming · Rubens'},
-    {f:'monuments/parthenon',     yr:'438 BC',           nm:'The Parthenon',         ref:'Athens, Greece',       why:'The height of the world Christ would enter'},
-    {f:'monuments/western-wall',  yr:'c. 19 BC',         nm:'The Temple Mount',      ref:'Jerusalem',            why:'The Temple Jesus Himself walked in'},
-    {f:'art/annunciation',        yr:'The Annunciation', nm:'Mary says yes',         ref:'Luke 1:38',     why:'The new Eve; her fiat opens the way · Fra Angelico'},
-    {f:'art/nativity',            yr:'The Nativity',     nm:'The Word made flesh',   ref:'John 1:14',     why:'God born among us · Honthorst'},
-    {f:'art/baptism',             yr:'AD 30',            nm:'John the Baptist',      ref:'John 1:29',     why:'Behold the Lamb of God · Piero della Francesca'},
-    {f:'art/ministry',            yr:'His ministry',     nm:'Master of wind and sea', ref:'Matthew 14:25',why:'He forgives sins and calms the storm · Delacroix'},
-    {f:'art/lastsupper',          yr:'Holy Thursday',    nm:'The Last Supper',       ref:'Luke 22:19',    why:'The Eucharist and the priesthood given · Leonardo'},
-    {f:'art/crucifixion',         yr:'Good Friday',      nm:'The Crucifixion',       ref:'John 19:30',    why:'The sacrifice that redeems the world · Velázquez'},
-    {f:'art/resurrection',        yr:'Easter',           nm:'The Resurrection',      ref:'Luke 24:6',     why:'Death itself conquered · Piero della Francesca'},
-    {f:'art/pentecost',           yr:'AD 33',            nm:'Pentecost',             ref:'Acts 2:3',      why:'The Church is born · El Greco'},
-    {f:'art/peter',               yr:'The keys',         nm:'Saint Peter',           ref:'Matthew 16:18', why:'On this rock I will build my Church · Perugino'},
-    {f:'monuments/colosseum',     yr:'AD 80',            nm:'The Colosseum',         ref:'Rome, Italy',          why:'Where the martyrs gave their witness'},
-    {f:'monuments/hagia-sophia',  yr:'AD 537',           nm:'Hagia Sophia',          ref:'Constantinople',       why:'The greatest church in Christendom'},
-    {f:'monuments/notre-dame',    yr:'1345',             nm:'Notre-Dame de Paris',   ref:'Paris, France',        why:'Our Lady in stone and light'},
-    {f:'monuments/sistine-chapel',yr:'1512',             nm:'The Sistine Chapel',    ref:'Vatican City',         why:'Michelangelo paints creation overhead', up:true},
-    {f:'monuments/st-peters',     yr:'1626',             nm:"St. Peter's Basilica",  ref:'Vatican City',         why:'Raised over the tomb of Peter'},
-    {f:'monuments/eiffel-tower',  yr:'1889',             nm:'Eiffel Tower',          ref:'Paris, France',        why:'The modern age begins', tall:true},
-    {f:'monuments/christ-the-redeemer', yr:'1931',       nm:'Christ the Redeemer',   ref:'Rio de Janeiro',       why:'Arms open over the new world', tall:true},
-    {f:'monuments/sagrada-familia', yr:'1882 – today',   nm:'Sagrada Família',       ref:'Barcelona, Spain',     why:'Still rising, still building', tall:true}
+    // ---- Old and New Testament, in order ----
+    {f:'art/creation', d:2.15, yr:'In the beginning', nm:'Creation', ref:'Genesis 1:3', why:'God speaks, and there is light · Doré'},
+    {f:'art/adam', d:2.15, yr:'The first man', nm:'Adam and Eve', ref:'Genesis 2:7', why:'Made in the image of God · Michelangelo'},
+    {f:'art/fall', d:2.15, yr:'The Fall', nm:'Sin enters the world', ref:'Genesis 3:15', why:'And God promises a Redeemer · Michelangelo'},
+    {f:'art/cain', d:2.15, yr:'The first sons', nm:'Cain and Abel', ref:'Genesis 4:4', why:'The first offering, the first murder · Doré'},
+    {f:'art/noah', d:2.15, yr:'The Flood', nm:'Noah', ref:'Genesis 9:13', why:'A remnant saved, a covenant sealed · Doré'},
+    {f:'art/babel', d:2.15, yr:'After the flood', nm:'The Tower of Babel', ref:'Genesis 11:4', why:'Pride scatters the nations · Bruegel'},
+    {f:'art/abram', d:2.15, yr:'c. 1900 BC', nm:'The call of Abraham', ref:'Genesis 12:1', why:'Leave your land; I will make you a nation · Molnár'},
+    {f:'art/abraham', d:2.15, yr:'c. 1870 BC', nm:'Abraham and Isaac', ref:'Genesis 22:13', why:'A father offers his only son · Caravaggio'},
+    {f:'art/jacob', d:2.15, yr:'c. 1800 BC', nm:'Jacob\'s ladder', ref:'Genesis 28:12', why:'Heaven opened over the earth · Murillo'},
+    {f:'art/joseph', d:2.15, yr:'c. 1750 BC', nm:'Joseph sold', ref:'Genesis 37:28', why:'Betrayed by his brothers, he saves them · Velázquez'},
+    {f:'art/mosesbaby', d:2.15, yr:'c. 1300 BC', nm:'Moses drawn from the water', ref:'Exodus 2:10', why:'Saved from the river to save a people · Alma-Tadema'},
+    {f:'art/burningbush', d:2.15, yr:'c. 1260 BC', nm:'The burning bush', ref:'Exodus 3:14', why:'I AM WHO AM · Fetti'},
+    {f:'art/passover', d:2.15, yr:'c. 1250 BC', nm:'The Passover', ref:'Exodus 12:13', why:'The blood of the lamb saves · Doré'},
+    {f:'art/exodus', d:2.15, yr:'The Exodus', nm:'Through the sea', ref:'Exodus 14:21', why:'From slavery into freedom · Aivazovsky'},
+    {f:'art/manna', d:2.15, yr:'In the desert', nm:'Bread from heaven', ref:'Exodus 16:15', why:'A foreshadowing of the Eucharist · Poussin'},
+    {f:'art/moses', d:2.15, yr:'Mount Sinai', nm:'The Ten Commandments', ref:'Exodus 20', why:'The law written by the finger of God · Rembrandt'},
+    {f:'art/goldencalf', d:2.15, yr:'At the mountain', nm:'The golden calf', ref:'Exodus 32:19', why:'The people turn to idols · Poussin'},
+    {f:'art/jericho', d:2.15, yr:'c. 1200 BC', nm:'The walls of Jericho', ref:'Joshua 6:20', why:'The promised land is entered · Doré'},
+    {f:'art/ruth', d:2.15, yr:'c. 1100 BC', nm:'Ruth', ref:'Ruth 1:16', why:'A foreign woman in the line of Christ · Schnorr'},
+    {f:'art/anointdavid', d:2.15, yr:'c. 1025 BC', nm:'Samuel anoints David', ref:'1 Samuel 16:13', why:'The shepherd is chosen as king · Veronese'},
+    {f:'art/goliath', d:2.15, yr:'c. 1020 BC', nm:'David and Goliath', ref:'1 Samuel 17:45', why:'The small conquer in God\'s name · Caravaggio'},
+    {f:'art/david', d:2.15, yr:'c. 1000 BC', nm:'King David', ref:'2 Samuel 7:16', why:'From his line the Messiah will come · de Bray'},
+    {f:'art/solomon', d:2.15, yr:'c. 960 BC', nm:'Solomon\'s wisdom', ref:'1 Kings 3:28', why:'The Temple is built in Jerusalem · after Poussin'},
+    {f:'art/elijah', d:2.15, yr:'c. 860 BC', nm:'Elijah', ref:'1 Kings 18:38', why:'Fire from heaven turns hearts back'},
+    {f:'art/jonah', d:2.15, yr:'c. 780 BC', nm:'Jonah', ref:'Jonah 2:1', why:'Three days in the deep, a sign of the Resurrection · Doré'},
+    {f:'art/isaiah', d:2.15, yr:'c. 740 BC', nm:'Isaiah', ref:'Isaiah 7:14', why:'A virgin shall conceive · Michelangelo'},
+    {f:'art/jeremiah', d:2.15, yr:'c. 600 BC', nm:'Jeremiah', ref:'Jeremiah 31:31', why:'A new and everlasting covenant · Rembrandt'},
+    {f:'art/ezekiel', d:2.15, yr:'c. 590 BC', nm:'Ezekiel', ref:'Ezekiel 37:5', why:'Dry bones live again · Doré'},
+    {f:'art/daniel', d:2.15, yr:'c. 540 BC', nm:'Daniel', ref:'Daniel 7:13', why:'He sees the Son of Man coming · Rubens'},
+    {f:'art/judith', d:2.15, yr:'c. 500 BC', nm:'Judith', ref:'Judith 13:8', why:'God saves His people by a woman\'s hand · Gentileschi'},
+    {f:'art/annunciation', d:2.15, yr:'c. 4 BC', nm:'The Annunciation', ref:'Luke 1:38', why:'The new Eve; her fiat opens the way · Fra Angelico'},
+    {f:'art/visitation', d:2.15, yr:'c. 4 BC', nm:'The Visitation', ref:'Luke 1:42', why:'Blessed art thou among women · Pontormo'},
+    {f:'art/nativity', d:2.15, yr:'The Nativity', nm:'The Word made flesh', ref:'John 1:14', why:'God is born among us · Honthorst'},
+    {f:'art/magi', d:2.15, yr:'Epiphany', nm:'The Magi', ref:'Matthew 2:11', why:'The nations come to adore Him · Fra Angelico'},
+    {f:'art/presentation', d:2.15, yr:'Forty days later', nm:'The Presentation', ref:'Luke 2:29', why:'A light to the gentiles · Rembrandt'},
+    {f:'art/flight', d:2.15, yr:'Soon after', nm:'Flight into Egypt', ref:'Matthew 2:14', why:'The Holy Family in exile · Caravaggio'},
+    {f:'art/temple12', d:2.15, yr:'AD 8', nm:'Found in the Temple', ref:'Luke 2:49', why:'I must be about my Father\'s business · Veronese'},
+    {f:'art/baptism', d:2.15, yr:'AD 30', nm:'The Baptism', ref:'John 1:29', why:'Behold the Lamb of God · Piero della Francesca'},
+    {f:'art/temptation', d:2.15, yr:'AD 30', nm:'The Temptation', ref:'Matthew 4:10', why:'Forty days in the wilderness · Botticelli'},
+    {f:'art/sermon', d:2.15, yr:'His preaching', nm:'The Sermon on the Mount', ref:'Matthew 5:3', why:'Blessed are the poor in spirit · Bloch'},
+    {f:'art/callmatthew', d:2.15, yr:'The call', nm:'Follow me', ref:'Matthew 9:9', why:'Sinners called to be apostles · Caravaggio'},
+    {f:'art/storm', d:2.15, yr:'On the lake', nm:'He calms the storm', ref:'Mark 4:39', why:'Even wind and sea obey Him · Rembrandt'},
+    {f:'art/ministry', d:2.15, yr:'On the water', nm:'Master of the sea', ref:'Matthew 14:25', why:'Take heart; it is I · Delacroix'},
+    {f:'art/transfig', d:2.15, yr:'On the mountain', nm:'The Transfiguration', ref:'Matthew 17:2', why:'His glory shown before the Passion · Raphael'},
+    {f:'art/lazarus', d:2.15, yr:'At Bethany', nm:'The raising of Lazarus', ref:'John 11:43', why:'I am the resurrection and the life · Caravaggio'},
+    {f:'art/palmsunday', d:2.15, yr:'Palm Sunday', nm:'Entry into Jerusalem', ref:'Matthew 21:9', why:'Hosanna to the Son of David · Giotto'},
+    {f:'art/washfeet', d:2.15, yr:'Holy Thursday', nm:'He washes their feet', ref:'John 13:14', why:'The Master becomes the servant · Tintoretto'},
+    // ---- the Last Supper, held ----
+    {f:'art/lastsupper', d:6.0, yr:'Holy Thursday', nm:'The Last Supper', ref:'Luke 22:19', why:'This is my body, given for you · Leonardo da Vinci'},
+    // ---- the Passion, Resurrection and the first days of the Church ----
+    {f:'art/gethsemane', d:2.3, yr:'That night', nm:'The Agony in the Garden', ref:'Luke 22:42', why:'Not my will, but thine · Bloch'},
+    {f:'art/arrest', d:2.3, yr:'That night', nm:'The betrayal', ref:'Matthew 26:49', why:'Betrayed with a kiss · Caravaggio'},
+    {f:'art/viacrucis', d:2.3, yr:'Good Friday', nm:'The way of the cross', ref:'Luke 23:26', why:'He carries it for us · El Greco'},
+    {f:'art/crucifixion', d:2.3, yr:'Good Friday', nm:'The Crucifixion', ref:'John 19:30', why:'It is finished · Velázquez'},
+    {f:'art/entombment', d:2.3, yr:'Good Friday', nm:'The Entombment', ref:'Mark 15:46', why:'Laid in the tomb · Caravaggio'},
+    {f:'art/pieta', d:2.3, yr:'Good Friday', nm:'The Pietà', ref:'John 19:25', why:'His mother receives Him · Michelangelo'},
+    {f:'art/resurrection', d:2.3, yr:'Easter', nm:'The Resurrection', ref:'Luke 24:6', why:'Death itself conquered · Piero della Francesca'},
+    {f:'art/thomas', d:2.3, yr:'Eight days later', nm:'My Lord and my God', ref:'John 20:28', why:'Doubt becomes faith · Caravaggio'},
+    {f:'art/ascension', d:2.3, yr:'Forty days later', nm:'The Ascension', ref:'Acts 1:9', why:'He returns to the Father · Rembrandt'},
+    {f:'art/pentecost', d:2.3, yr:'AD 33', nm:'Pentecost', ref:'Acts 2:3', why:'The Church is born · El Greco'},
+    {f:'art/peter', d:2.3, yr:'The keys', nm:'Saint Peter', ref:'Matthew 16:18', why:'On this rock I will build my Church · Perugino'},
+    {f:'art/paul', d:2.3, yr:'c. AD 35', nm:'The conversion of Paul', ref:'Acts 9:4', why:'Why persecutest thou me? · Caravaggio'},
+    {f:'art/assumption', d:2.3, yr:'The end of her life', nm:'The Assumption', ref:'Revelation 12:1', why:'Our Lady taken up, crowned in glory · Veronese'},
+    // ---- only now the places, each at the year it was raised ----
+    {f:'monuments/great-pyramid', d:2.4, yr:'c. 2560 BC', nm:'Great Pyramid of Giza', ref:'Giza, Egypt', why:'Standing already when Abraham was called'},
+    {f:'monuments/colosseum', d:2.4, yr:'AD 80', nm:'The Colosseum', ref:'Rome, Italy', why:'Where the martyrs gave their witness'},
+    {f:'monuments/mont-saint-michel', d:2.4, yr:'966', nm:'Mont-Saint-Michel', ref:'Normandy, France', why:'An abbey raised to Saint Michael'},
+    {f:'monuments/santiago', d:2.4, yr:'1211', nm:'Santiago de Compostela', ref:'Galicia, Spain', why:'The pilgrim road of Saint James'},
+    {f:'monuments/chartres', d:2.4, yr:'1220', nm:'Chartres Cathedral', ref:'Chartres, France', why:'Stone and glass for Our Lady'},
+    {f:'monuments/cologne', d:2.4, yr:'1248', nm:'Cologne Cathedral', ref:'Cologne, Germany', why:'Begun for the relics of the Magi'},
+    {f:'monuments/assisi', d:2.4, yr:'1253', nm:'Basilica of Saint Francis', ref:'Assisi, Italy', why:'Poverty that renewed the Church'},
+    {f:'monuments/notre-dame', d:2.4, yr:'1345', nm:'Notre-Dame de Paris', ref:'Paris, France', why:'Our Lady in stone and light'},
+    {f:'monuments/milan-duomo', d:2.4, yr:'1386', nm:'Milan Cathedral', ref:'Milan, Italy', why:'Six centuries in the building'},
+    {f:'monuments/sistine-chapel', d:2.4, yr:'1512', nm:'The Sistine Chapel', ref:'Vatican City', why:'Michelangelo paints creation overhead', up:true},
+    {f:'monuments/st-peters', d:2.4, yr:'1626', nm:'St. Peter\'s Basilica', ref:'Vatican City', why:'Raised over the tomb of Peter'},
+    {f:'monuments/st-peters-inside', d:2.4, yr:'1626', nm:'Under the dome', ref:'Vatican City', why:'The heart of the Church on earth'},
+    {f:'monuments/guadalupe', d:2.4, yr:'1709', nm:'Our Lady of Guadalupe', ref:'Mexico City', why:'Where Our Lady appeared to Juan Diego'},
+    {f:'monuments/lourdes', d:2.4, yr:'1876', nm:'Lourdes', ref:'Lourdes, France', why:'Where the sick still come to be healed'},
+    {f:'monuments/st-patricks', d:2.4, yr:'1878', nm:'St. Patrick\'s Cathedral', ref:'New York, USA', why:'The faith carried to the new world'},
+    {f:'monuments/eiffel-tower', d:2.4, yr:'1889', nm:'Eiffel Tower', ref:'Paris, France', why:'The modern age begins', tall:true},
+    {f:'monuments/sacre-coeur', d:2.4, yr:'1914', nm:'Sacré-Cœur', ref:'Montmartre, Paris', why:'Built in reparation, open day and night'},
+    {f:'monuments/christ-the-redeemer', d:2.4, yr:'1931', nm:'Christ the Redeemer', ref:'Rio de Janeiro', why:'Arms open over the new world', tall:true},
+    {f:'monuments/fatima', d:2.4, yr:'1953', nm:'Fátima', ref:'Fátima, Portugal', why:'Where Our Lady asked for the Rosary'},
+    {f:'monuments/sagrada-familia', d:2.4, yr:'1882 – today', nm:'Sagrada Família', ref:'Barcelona, Spain', why:'Still rising, still building', tall:true}
   ];
   let acc = MON0;
-  for(const s of SCENES){ s.start = acc; s.dur = 3.2; acc += s.dur; }
+  for(const s of SCENES){ s.start = acc; s.dur = s.d; acc += s.dur; }
   const MON_END = acc - SCENES[SCENES.length-1].dur + MON_FADE;   // last scene begins
   const STORY_END = acc;                                          // last scene finishes
   const MON_STEP = 3.2;
@@ -1726,7 +1777,8 @@
       Em:  [-5, 2, 7, 10, 14],
       Dm:  [-7, 5, 8, 12, 17]
     };
-    const MONTAGE = ['Am', 'F', 'C', 'G'];
+    // a bright, rising progression for the story of salvation: C – G – F – C
+    const MONTAGE = ['C', 'G', 'F', 'C'];
 
     function noiseBuffer(sec){
       const b = ac.createBuffer(1, ac.sampleRate*sec, ac.sampleRate), d = b.getChannelData(0);
@@ -1856,11 +1908,12 @@
       else if(t < PLAN0){ chord = 'C'; pad = .8; drone = .6; arp = .5; pulse = 0; noise = smooth(ZOOM0, GAL_IN, t)*.18; cutoff = 1800; arpRate = .16; }
       else if(t < EARTH0){ chord = 'G'; pad = .85; drone = .6; arp = .55; pulse = .25; noise = .06; cutoff = 2200; arpRate = .14; }
       else if(t < DIVE0){ chord = 'Em'; pad = .9; drone = .55; arp = .4; pulse = 0; noise = .04; cutoff = 2000; arpRate = .2; }
-      else if(t < MON0){ chord = 'Am'; pad = .7; drone = .7; arp = .2; pulse = 0; noise = smooth(DIVE0, DIVE1, t)*.4; cutoff = 2600; arpRate = .2; }
+      // the dive home: the music turns to triumph as the story of God reaches its fulfilment
+      else if(t < MON0){ chord = 'C'; pad = 1; drone = .85; arp = .55; pulse = .5; noise = smooth(DIVE0, DIVE1, t)*.45; cutoff = 3200; arpRate = .16; }
       else if(t < STORY_END + 1.5){
         const idx = Math.floor((t - MON0)/(MON_STEP*2));
-        chord = MONTAGE[idx % MONTAGE.length]; pad = .9; drone = .75; arp = .6; pulse = .85; noise = 0; cutoff = 2800; arpRate = .125;
-      } else { chord = 'C'; pad = .6; drone = .35; arp = .15; pulse = 0; noise = 0; cutoff = 1200; arpRate = .3; }
+        chord = MONTAGE[idx % MONTAGE.length]; pad = 1; drone = .85; arp = .7; pulse = .95; noise = 0; cutoff = 3200; arpRate = .125;
+      } else { chord = 'C'; pad = .75; drone = .4; arp = .2; pulse = 0; noise = 0; cutoff = 1500; arpRate = .3; }
 
       // duck the music under the narrator
       const duck = ((t > TITLE + .3 && t < TITLE + 4.8) || narrating) ? .4 : 1;
