@@ -90,7 +90,7 @@
   .cap .yr{font-family:var(--mono);font-size:clamp(11px,1.3vw,13px);letter-spacing:.24em;text-transform:uppercase;color:var(--plasma)}
   .cap .nm{margin-top:8px;font-family:var(--display);font-weight:300;font-size:clamp(34px,6vw,76px);line-height:1;letter-spacing:-.02em;color:var(--ink);text-shadow:0 2px 30px rgba(3,2,8,.8);text-wrap:balance}
   .cap .pl{margin-top:10px;font-family:var(--display);font-style:italic;font-size:clamp(15px,1.9vw,21px);color:var(--ink-dim)}
-  .cap .cr{margin-top:14px;font-family:var(--display);font-style:italic;font-size:clamp(13px,1.5vw,17px);letter-spacing:.01em;color:rgba(243,239,230,.62)}
+  .cap .cr{margin-top:14px;max-width:min(680px,72vw);font-family:var(--display);font-style:italic;font-size:clamp(13px,1.5vw,17px);line-height:1.45;letter-spacing:.01em;color:rgba(243,239,230,.7);text-wrap:pretty}
   .timeline{
     position:absolute;left:clamp(20px,5vw,64px);right:clamp(20px,5vw,64px);top:clamp(18px,4vh,34px);height:2px;z-index:1;
     background:rgba(243,239,230,.14);border-radius:2px;overflow:hidden;
@@ -211,9 +211,9 @@
   // timeline (seconds)
   const HEAT = 2.4, BANG = 3.8, LIGHT = 5.6, WHITE = 6.2, REVEAL = 6.35, CALM = 7.3, TITLE = 7.5, END = 12.4;
   const FLASH_PEAK = .72, OPEN_FADE = 1.1;
-  // journey after the title: words leave, zoom into the galaxy, planets fly past, arrive at Earth
+  // journey after the title: words leave, the camera races through the stars, every planet sweeps past, then home to Earth
   // the title holds for the length of the narration, then the journey runs at a quicker pace
-  const DEPART = TITLE + 6.0, ZOOM0 = DEPART + .3, GAL_IN = ZOOM0 + 5.5, PLAN0 = GAL_IN + 2.4, EARTH0 = PLAN0 + 5.2, FINAL = EARTH0 + 4.8;
+  const DEPART = TITLE + 6.0, ZOOM0 = DEPART + .3, GAL_IN = ZOOM0 + 3.0, PLAN0 = GAL_IN + 2.0, EARTH0 = PLAN0 + 13.6, FINAL = EARTH0 + 5.4;
   // dive through Earth's clouds, then humanity's great structures from oldest to newest
   const DIVE0 = FINAL + 1.6, DIVE1 = DIVE0 + 2.4, MON0 = DIVE1 - .5, MON_FADE = .5;
 
@@ -222,90 +222,90 @@
   // Every scene in date order: the whole story first (Old Testament, then New), then the places by the year each was built.
   const SCENES = [
     // ---- Old and New Testament, in order ----
-    {f:'art/creation', d:2.15, yr:'In the beginning', nm:'Creation', ref:'Genesis 1:3', why:'God speaks, and there is light · Doré'},
-    {f:'art/adam', d:2.15, yr:'The first man', nm:'Adam and Eve', ref:'Genesis 2:7', why:'Made in the image of God · Michelangelo'},
-    {f:'art/fall', d:2.15, yr:'The Fall', nm:'Sin enters the world', ref:'Genesis 3:15', why:'And God promises a Redeemer · Michelangelo'},
-    {f:'art/cain', d:2.15, yr:'The first sons', nm:'Cain and Abel', ref:'Genesis 4:4', why:'The first offering, the first murder · Doré'},
-    {f:'art/noah', d:2.15, yr:'The Flood', nm:'Noah', ref:'Genesis 9:13', why:'A remnant saved, a covenant sealed · Doré'},
-    {f:'art/babel', d:2.15, yr:'After the flood', nm:'The Tower of Babel', ref:'Genesis 11:4', why:'Pride scatters the nations · Bruegel'},
-    {f:'art/abram', d:2.15, yr:'c. 1900 BC', nm:'The call of Abraham', ref:'Genesis 12:1', why:'Leave your land; I will make you a nation · Molnár'},
-    {f:'art/abraham', d:2.15, yr:'c. 1870 BC', nm:'Abraham and Isaac', ref:'Genesis 22:13', why:'A father offers his only son · Caravaggio'},
-    {f:'art/jacob', d:2.15, yr:'c. 1800 BC', nm:'Jacob\'s ladder', ref:'Genesis 28:12', why:'Heaven opened over the earth · Murillo'},
-    {f:'art/joseph', d:2.15, yr:'c. 1750 BC', nm:'Joseph sold', ref:'Genesis 37:28', why:'Betrayed by his brothers, he saves them · Velázquez'},
-    {f:'art/mosesbaby', d:2.15, yr:'c. 1300 BC', nm:'Moses drawn from the water', ref:'Exodus 2:10', why:'Saved from the river to save a people · Alma-Tadema'},
-    {f:'art/burningbush', d:2.15, yr:'c. 1260 BC', nm:'The burning bush', ref:'Exodus 3:14', why:'I AM WHO AM · Fetti'},
-    {f:'art/passover', d:2.15, yr:'c. 1250 BC', nm:'The Passover', ref:'Exodus 12:13', why:'The blood of the lamb saves · Doré'},
-    {f:'art/exodus', d:2.15, yr:'The Exodus', nm:'Through the sea', ref:'Exodus 14:21', why:'From slavery into freedom · Aivazovsky'},
-    {f:'art/manna', d:2.15, yr:'In the desert', nm:'Bread from heaven', ref:'Exodus 16:15', why:'A foreshadowing of the Eucharist · Poussin'},
-    {f:'art/moses', d:2.15, yr:'Mount Sinai', nm:'The Ten Commandments', ref:'Exodus 20', why:'The law written by the finger of God · Rembrandt'},
-    {f:'art/goldencalf', d:2.15, yr:'At the mountain', nm:'The golden calf', ref:'Exodus 32:19', why:'The people turn to idols · Poussin'},
-    {f:'art/jericho', d:2.15, yr:'c. 1200 BC', nm:'The walls of Jericho', ref:'Joshua 6:20', why:'The promised land is entered · Doré'},
-    {f:'art/ruth', d:2.15, yr:'c. 1100 BC', nm:'Ruth', ref:'Ruth 1:16', why:'A foreign woman in the line of Christ · Schnorr'},
-    {f:'art/anointdavid', d:2.15, yr:'c. 1025 BC', nm:'Samuel anoints David', ref:'1 Samuel 16:13', why:'The shepherd is chosen as king · Veronese'},
-    {f:'art/goliath', d:2.15, yr:'c. 1020 BC', nm:'David and Goliath', ref:'1 Samuel 17:45', why:'The small conquer in God\'s name · Caravaggio'},
-    {f:'art/david', d:2.15, yr:'c. 1000 BC', nm:'King David', ref:'2 Samuel 7:16', why:'From his line the Messiah will come · de Bray'},
-    {f:'art/solomon', d:2.15, yr:'c. 960 BC', nm:'Solomon\'s wisdom', ref:'1 Kings 3:28', why:'The Temple is built in Jerusalem · after Poussin'},
-    {f:'art/elijah', d:2.15, yr:'c. 860 BC', nm:'Elijah', ref:'1 Kings 18:38', why:'Fire from heaven turns hearts back'},
-    {f:'art/jonah', d:2.15, yr:'c. 780 BC', nm:'Jonah', ref:'Jonah 2:1', why:'Three days in the deep, a sign of the Resurrection · Doré'},
-    {f:'art/isaiah', d:2.15, yr:'c. 740 BC', nm:'Isaiah', ref:'Isaiah 7:14', why:'A virgin shall conceive · Michelangelo'},
-    {f:'art/jeremiah', d:2.15, yr:'c. 600 BC', nm:'Jeremiah', ref:'Jeremiah 31:31', why:'A new and everlasting covenant · Rembrandt'},
-    {f:'art/ezekiel', d:2.15, yr:'c. 590 BC', nm:'Ezekiel', ref:'Ezekiel 37:5', why:'Dry bones live again · Doré'},
-    {f:'art/daniel', d:2.15, yr:'c. 540 BC', nm:'Daniel', ref:'Daniel 7:13', why:'He sees the Son of Man coming · Rubens'},
-    {f:'art/judith', d:2.15, yr:'c. 500 BC', nm:'Judith', ref:'Judith 13:8', why:'God saves His people by a woman\'s hand · Gentileschi'},
-    {f:'art/annunciation', d:2.15, yr:'c. 4 BC', nm:'The Annunciation', ref:'Luke 1:38', why:'The new Eve; her fiat opens the way · Fra Angelico'},
-    {f:'art/visitation', d:2.15, yr:'c. 4 BC', nm:'The Visitation', ref:'Luke 1:42', why:'Blessed art thou among women · Pontormo'},
-    {f:'art/nativity', d:2.15, yr:'The Nativity', nm:'The Word made flesh', ref:'John 1:14', why:'God is born among us · Honthorst'},
-    {f:'art/magi', d:2.15, yr:'Epiphany', nm:'The Magi', ref:'Matthew 2:11', why:'The nations come to adore Him · Fra Angelico'},
-    {f:'art/presentation', d:2.15, yr:'Forty days later', nm:'The Presentation', ref:'Luke 2:29', why:'A light to the gentiles · Rembrandt'},
-    {f:'art/flight', d:2.15, yr:'Soon after', nm:'Flight into Egypt', ref:'Matthew 2:14', why:'The Holy Family in exile · Caravaggio'},
-    {f:'art/temple12', d:2.15, yr:'AD 8', nm:'Found in the Temple', ref:'Luke 2:49', why:'I must be about my Father\'s business · Veronese'},
-    {f:'art/baptism', d:2.15, yr:'AD 30', nm:'The Baptism', ref:'John 1:29', why:'Behold the Lamb of God · Piero della Francesca'},
-    {f:'art/temptation', d:2.15, yr:'AD 30', nm:'The Temptation', ref:'Matthew 4:10', why:'Forty days in the wilderness · Botticelli'},
-    {f:'art/sermon', d:2.15, yr:'His preaching', nm:'The Sermon on the Mount', ref:'Matthew 5:3', why:'Blessed are the poor in spirit · Bloch'},
-    {f:'art/callmatthew', d:2.15, yr:'The call', nm:'Follow me', ref:'Matthew 9:9', why:'Sinners called to be apostles · Caravaggio'},
-    {f:'art/storm', d:2.15, yr:'On the lake', nm:'He calms the storm', ref:'Mark 4:39', why:'Even wind and sea obey Him · Rembrandt'},
-    {f:'art/ministry', d:2.15, yr:'On the water', nm:'Master of the sea', ref:'Matthew 14:25', why:'Take heart; it is I · Delacroix'},
-    {f:'art/transfig', d:2.15, yr:'On the mountain', nm:'The Transfiguration', ref:'Matthew 17:2', why:'His glory shown before the Passion · Raphael'},
-    {f:'art/lazarus', d:2.15, yr:'At Bethany', nm:'The raising of Lazarus', ref:'John 11:43', why:'I am the resurrection and the life · Caravaggio'},
-    {f:'art/palmsunday', d:2.15, yr:'Palm Sunday', nm:'Entry into Jerusalem', ref:'Matthew 21:9', why:'Hosanna to the Son of David · Giotto'},
-    {f:'art/washfeet', d:2.15, yr:'Holy Thursday', nm:'He washes their feet', ref:'John 13:14', why:'The Master becomes the servant · Tintoretto'},
+    {f:'art/creation', d:2.65, yr:'In the beginning', nm:'Creation', ref:'Genesis 1:3', why:'Out of nothing God speaks, and light answers. Everything that exists begins here, and He calls it good. · Doré'},
+    {f:'art/adam', d:2.65, yr:'The first man', nm:'Adam and Eve', ref:'Genesis 2:7', why:'God shapes man from the dust and breathes His own life into him. Alone of all creatures, we are made in His image. · Michelangelo'},
+    {f:'art/fall', d:2.65, yr:'The Fall', nm:'Sin enters the world', ref:'Genesis 3:15', why:'Tempted, Adam and Eve reach for the one thing forbidden. Paradise closes — yet God already promises a Redeemer born of woman. · Michelangelo'},
+    {f:'art/cain', d:2.65, yr:'The first sons', nm:'Cain and Abel', ref:'Genesis 4:4', why:'The wound spreads to the next generation: jealousy over an offering ends in the first murder, brother against brother. · Doré'},
+    {f:'art/noah', d:2.65, yr:'The Flood', nm:'Noah', ref:'Genesis 9:13', why:'Humanity grows so corrupt that God begins again with one faithful family. The rainbow is His pledge never to destroy the earth so. · Doré'},
+    {f:'art/babel', d:2.65, yr:'After the flood', nm:'The Tower of Babel', ref:'Genesis 11:4', why:'Men build a tower to make a name for themselves without God. Their language is confounded and the nations scatter over the earth. · Bruegel'},
+    {f:'art/abram', d:2.65, yr:'c. 1900 BC', nm:'The call of Abraham', ref:'Genesis 12:1', why:'Out of those scattered nations God calls one man. Leave your country, He says, and I will make of you a great people. · Molnár'},
+    {f:'art/abraham', d:2.65, yr:'c. 1870 BC', nm:'Abraham and Isaac', ref:'Genesis 22:13', why:'Asked for his only son, Abraham obeys — and God stays his hand, providing a ram. Two thousand years later a Father will not spare His own Son. · Caravaggio'},
+    {f:'art/jacob', d:2.65, yr:'c. 1800 BC', nm:'Jacob\'s ladder', ref:'Genesis 28:12', why:'Abraham\'s grandson dreams of a ladder set on earth reaching to heaven, angels ascending and descending. God renames him Israel. · Murillo'},
+    {f:'art/joseph', d:2.65, yr:'c. 1750 BC', nm:'Joseph sold', ref:'Genesis 37:28', why:'Jacob\'s sons sell their brother into Egypt. What they mean for evil God turns to good: Joseph rises to save them all from famine. · Velázquez'},
+    {f:'art/mosesbaby', d:2.65, yr:'c. 1300 BC', nm:'Moses drawn from the water', ref:'Exodus 2:10', why:'Four centuries later Israel is enslaved in Egypt. A baby set adrift to escape Pharaoh\'s slaughter is drawn from the river by Pharaoh\'s own daughter. · Alma-Tadema'},
+    {f:'art/burningbush', d:2.65, yr:'c. 1260 BC', nm:'The burning bush', ref:'Exodus 3:14', why:'From a bush that burns without being consumed, God gives Moses His name — I AM WHO AM — and sends him to free His people. · Fetti'},
+    {f:'art/passover', d:2.65, yr:'c. 1250 BC', nm:'The Passover', ref:'Exodus 12:13', why:'Ten plagues break Egypt\'s grip. On the last night each family marks its door with the blood of a spotless lamb, and death passes over. · Doré'},
+    {f:'art/exodus', d:2.65, yr:'The Exodus', nm:'Through the sea', ref:'Exodus 14:21', why:'Pharaoh\'s army closes in, the sea opens, and Israel walks out of slavery on dry ground. The waters return and the pursuers are gone. · Aivazovsky'},
+    {f:'art/manna', d:2.65, yr:'In the desert', nm:'Bread from heaven', ref:'Exodus 16:15', why:'In the wilderness the people hunger, and bread falls from heaven each morning — the first shadow of the Bread Christ will give. · Poussin'},
+    {f:'art/moses', d:2.65, yr:'Mount Sinai', nm:'The Ten Commandments', ref:'Exodus 20', why:'On Sinai God binds Himself to Israel by covenant and writes His law with His own finger. A people is given a way to live. · Rembrandt'},
+    {f:'art/goldencalf', d:2.65, yr:'At the mountain', nm:'The golden calf', ref:'Exodus 32:19', why:'Moses is still on the mountain when the people melt their gold into an idol. Again and again Israel will forget, and God will not. · Poussin'},
+    {f:'art/jericho', d:2.65, yr:'c. 1200 BC', nm:'The walls of Jericho', ref:'Joshua 6:20', why:'After forty years of wandering, Israel enters the land promised to Abraham. The walls of Jericho fall before them at God\'s word. · Doré'},
+    {f:'art/ruth', d:2.65, yr:'c. 1100 BC', nm:'Ruth', ref:'Ruth 1:16', why:'A widow from Moab refuses to leave her mother-in-law: your people shall be my people. A foreigner is grafted into the family of the Messiah. · Schnorr'},
+    {f:'art/anointdavid', d:2.65, yr:'c. 1025 BC', nm:'Samuel anoints David', ref:'1 Samuel 16:13', why:'God passes over the tall and strong and sends Samuel to anoint the youngest son, a shepherd boy, because He looks upon the heart. · Veronese'},
+    {f:'art/goliath', d:2.65, yr:'c. 1020 BC', nm:'David and Goliath', ref:'1 Samuel 17:45', why:'Facing a giant no soldier dared fight, David comes in the name of the Lord of hosts — and a sling brings Goliath down. · Caravaggio'},
+    {f:'art/david', d:2.65, yr:'c. 1000 BC', nm:'King David', ref:'2 Samuel 7:16', why:'David reigns over a united Israel and makes Jerusalem the holy city. God swears his throne will last forever; the Messiah will be called Son of David. · de Bray'},
+    {f:'art/solomon', d:2.65, yr:'c. 960 BC', nm:'Solomon\'s wisdom', ref:'1 Kings 3:28', why:'David\'s son judges with God-given wisdom and raises the Temple in Jerusalem — the one place on earth where God\'s glory dwells among His people. · after Poussin'},
+    {f:'art/elijah', d:2.65, yr:'c. 860 BC', nm:'Elijah', ref:'1 Kings 18:38', why:'The kingdom divides and turns to false gods. On Carmel the prophet Elijah calls down fire from heaven, and the people\'s hearts turn back.'},
+    {f:'art/jonah', d:2.65, yr:'c. 780 BC', nm:'Jonah', ref:'Jonah 2:1', why:'Sent to preach to Israel\'s enemies, Jonah flees and is swallowed by the deep. Three days later he is delivered — the sign Christ will claim as His own. · Doré'},
+    {f:'art/isaiah', d:2.65, yr:'c. 740 BC', nm:'Isaiah', ref:'Isaiah 7:14', why:'Isaiah foretells it plainly: a virgin shall conceive and bear a son, and a suffering servant will be wounded for our transgressions. · Michelangelo'},
+    {f:'art/jeremiah', d:2.65, yr:'c. 600 BC', nm:'Jeremiah', ref:'Jeremiah 31:31', why:'As Jerusalem falls and the people are carried to Babylon, Jeremiah weeps — and promises a new and everlasting covenant written on the heart. · Rembrandt'},
+    {f:'art/ezekiel', d:2.65, yr:'c. 590 BC', nm:'Ezekiel', ref:'Ezekiel 37:5', why:'In exile Ezekiel is shown a valley of dry bones that stand and live again: God will raise His people from the grave of their captivity. · Doré'},
+    {f:'art/daniel', d:2.65, yr:'c. 540 BC', nm:'Daniel', ref:'Daniel 7:13', why:'In the courts of Babylon, Daniel keeps faith and sees a vision of one like a Son of Man coming on the clouds, given everlasting dominion. · Rubens'},
+    {f:'art/judith', d:2.65, yr:'c. 500 BC', nm:'Judith', ref:'Judith 13:8', why:'Israel restored is besieged again. God saves His people not by an army but by the courage of a single woman — as He will by another. · Gentileschi'},
+    {f:'art/annunciation', d:2.65, yr:'c. 4 BC', nm:'The Annunciation', ref:'Luke 1:38', why:'Four hundred silent years end with an angel in Nazareth. A girl answers, Be it done unto me — and where Eve said no, Mary says yes. · Fra Angelico'},
+    {f:'art/visitation', d:2.65, yr:'c. 4 BC', nm:'The Visitation', ref:'Luke 1:42', why:'Mary hurries to her cousin Elizabeth. The child in Elizabeth\'s womb leaps for joy, and she cries out: blessed art thou among women. · Pontormo'},
+    {f:'art/nativity', d:2.65, yr:'The Nativity', nm:'The Word made flesh', ref:'John 1:14', why:'In a stable in Bethlehem the God who made the stars is born a child. The Word is made flesh and dwells among us. · Honthorst'},
+    {f:'art/magi', d:2.65, yr:'Epiphany', nm:'The Magi', ref:'Matthew 2:11', why:'Wise men follow a star from the east and kneel before a poor child, offering gold, frankincense and myrrh. The nations have come to adore Him. · Fra Angelico'},
+    {f:'art/presentation', d:2.65, yr:'Forty days later', nm:'The Presentation', ref:'Luke 2:29', why:'Brought to the Temple as the law required, the infant is recognised by old Simeon: a light to the gentiles — and a sword for His mother\'s heart. · Rembrandt'},
+    {f:'art/flight', d:2.65, yr:'Soon after', nm:'Flight into Egypt', ref:'Matthew 2:14', why:'Herod orders every boy in Bethlehem killed. Warned in a dream, Joseph takes the child and His mother by night into Egypt. · Caravaggio'},
+    {f:'art/temple12', d:2.65, yr:'AD 8', nm:'Found in the Temple', ref:'Luke 2:49', why:'At twelve He is lost for three days and found teaching the doctors of the Temple. I must be about my Father\'s business, He says. · Veronese'},
+    {f:'art/baptism', d:2.65, yr:'AD 30', nm:'The Baptism', ref:'John 1:29', why:'Thirty years hidden, then the Jordan: John points and says, Behold the Lamb of God. The Spirit descends and the Father\'s voice is heard. · Piero della Francesca'},
+    {f:'art/temptation', d:2.65, yr:'AD 30', nm:'The Temptation', ref:'Matthew 4:10', why:'Forty days fasting in the desert, and Satan offers Him bread, safety and every kingdom of the world. He refuses them all. · Botticelli'},
+    {f:'art/sermon', d:2.65, yr:'His preaching', nm:'The Sermon on the Mount', ref:'Matthew 5:3', why:'He opens His mouth on a hillside and turns the world over: blessed are the poor, the meek, the merciful, the persecuted — theirs is the kingdom. · Bloch'},
+    {f:'art/callmatthew', d:2.65, yr:'The call', nm:'Follow me', ref:'Matthew 9:9', why:'He walks past a tax collector\'s table and says only, Follow me. Matthew leaves the money where it lies; sinners are called to be apostles. · Caravaggio'},
+    {f:'art/storm', d:2.65, yr:'On the lake', nm:'He calms the storm', ref:'Mark 4:39', why:'A squall nearly swamps the boat while He sleeps. He stands, rebukes the wind, and the sea goes still. Even the storm obeys Him. · Rembrandt'},
+    {f:'art/ministry', d:2.65, yr:'On the water', nm:'Master of the sea', ref:'Matthew 14:25', why:'He heals the blind, feeds thousands from a few loaves, and walks upon the water. Take heart, He tells them; it is I, be not afraid. · Delacroix'},
+    {f:'art/transfig', d:2.65, yr:'On the mountain', nm:'The Transfiguration', ref:'Matthew 17:2', why:'On the mountain His face shines like the sun and Moses and Elijah stand beside Him — the law and the prophets, and His glory shown before the cross. · Raphael'},
+    {f:'art/lazarus', d:2.65, yr:'At Bethany', nm:'The raising of Lazarus', ref:'John 11:43', why:'His friend has been four days in the tomb. Jesus weeps, then calls him out by name: I am the resurrection and the life. · Caravaggio'},
+    {f:'art/palmsunday', d:2.65, yr:'Palm Sunday', nm:'Entry into Jerusalem', ref:'Matthew 21:9', why:'He enters Jerusalem on a donkey to shouts of Hosanna and a road strewn with palms. Within five days the same crowd will call for His death. · Giotto'},
+    {f:'art/washfeet', d:2.65, yr:'Holy Thursday', nm:'He washes their feet', ref:'John 13:14', why:'At supper on the last night He takes a towel and washes His disciples\' feet, the Master doing the work of a slave, and tells them to do the same. · Tintoretto'},
     // ---- the Last Supper, held ----
-    {f:'art/lastsupper', d:6.0, yr:'Holy Thursday', nm:'The Last Supper', ref:'Luke 22:19', why:'This is my body, given for you · Leonardo da Vinci'},
+    {f:'art/lastsupper', d:6.5, yr:'Holy Thursday', nm:'The Last Supper', ref:'Luke 22:19', why:'Then He takes bread and breaks it: this is my body, given for you. Do this in memory of me. The Eucharist and the priesthood are given to the Church, and the Mass begins here. · Leonardo da Vinci'},
     // ---- the Passion, Resurrection and the first days of the Church ----
-    {f:'art/gethsemane', d:2.3, yr:'That night', nm:'The Agony in the Garden', ref:'Luke 22:42', why:'Not my will, but thine · Bloch'},
-    {f:'art/arrest', d:2.3, yr:'That night', nm:'The betrayal', ref:'Matthew 26:49', why:'Betrayed with a kiss · Caravaggio'},
-    {f:'art/viacrucis', d:2.3, yr:'Good Friday', nm:'The way of the cross', ref:'Luke 23:26', why:'He carries it for us · El Greco'},
-    {f:'art/crucifixion', d:2.3, yr:'Good Friday', nm:'The Crucifixion', ref:'John 19:30', why:'It is finished · Velázquez'},
-    {f:'art/entombment', d:2.3, yr:'Good Friday', nm:'The Entombment', ref:'Mark 15:46', why:'Laid in the tomb · Caravaggio'},
-    {f:'art/pieta', d:2.3, yr:'Good Friday', nm:'The Pietà', ref:'John 19:25', why:'His mother receives Him · Michelangelo'},
-    {f:'art/resurrection', d:2.3, yr:'Easter', nm:'The Resurrection', ref:'Luke 24:6', why:'Death itself conquered · Piero della Francesca'},
-    {f:'art/thomas', d:2.3, yr:'Eight days later', nm:'My Lord and my God', ref:'John 20:28', why:'Doubt becomes faith · Caravaggio'},
-    {f:'art/ascension', d:2.3, yr:'Forty days later', nm:'The Ascension', ref:'Acts 1:9', why:'He returns to the Father · Rembrandt'},
-    {f:'art/pentecost', d:2.3, yr:'AD 33', nm:'Pentecost', ref:'Acts 2:3', why:'The Church is born · El Greco'},
-    {f:'art/peter', d:2.3, yr:'The keys', nm:'Saint Peter', ref:'Matthew 16:18', why:'On this rock I will build my Church · Perugino'},
-    {f:'art/paul', d:2.3, yr:'c. AD 35', nm:'The conversion of Paul', ref:'Acts 9:4', why:'Why persecutest thou me? · Caravaggio'},
-    {f:'art/assumption', d:2.3, yr:'The end of her life', nm:'The Assumption', ref:'Revelation 12:1', why:'Our Lady taken up, crowned in glory · Veronese'},
+    {f:'art/gethsemane', d:2.8, yr:'That night', nm:'The Agony in the Garden', ref:'Luke 22:42', why:'In the garden He sweats blood and asks that the cup pass from Him, then yields: not my will, but thine, be done. · Bloch'},
+    {f:'art/arrest', d:2.8, yr:'That night', nm:'The betrayal', ref:'Matthew 26:49', why:'Torches in the dark, and one of the twelve identifies Him with a kiss. The disciples scatter; Peter denies he ever knew Him. · Caravaggio'},
+    {f:'art/viacrucis', d:2.8, yr:'Good Friday', nm:'The way of the cross', ref:'Luke 23:26', why:'Scourged, crowned with thorns and condemned, He carries His cross through the city, falling under its weight and meeting His mother on the way. · El Greco'},
+    {f:'art/crucifixion', d:2.8, yr:'Good Friday', nm:'The Crucifixion', ref:'John 19:30', why:'Between two thieves He forgives His executioners, gives His mother to us, and dies. It is consummated — the debt of Adam paid in full. · Velázquez'},
+    {f:'art/entombment', d:2.8, yr:'Good Friday', nm:'The Entombment', ref:'Mark 15:46', why:'His body is taken down, wrapped and laid in a borrowed tomb. A stone is rolled across it, and the world goes quiet. · Caravaggio'},
+    {f:'art/pieta', d:2.8, yr:'Good Friday', nm:'The Pietà', ref:'John 19:25', why:'Before the tomb, His mother holds Him one last time — the sword Simeon foretold thirty-three years earlier, run through her heart. · Michelangelo'},
+    {f:'art/resurrection', d:2.8, yr:'Easter', nm:'The Resurrection', ref:'Luke 24:6', why:'On the third morning the tomb is empty and the guards fall back as He rises. Why seek ye the living among the dead? Death itself is undone. · Piero della Francesca'},
+    {f:'art/thomas', d:2.8, yr:'Eight days later', nm:'My Lord and my God', ref:'John 20:28', why:'Thomas will not believe until he touches the wounds. Christ offers them freely, and doubt becomes the clearest confession: my Lord and my God. · Caravaggio'},
+    {f:'art/ascension', d:2.8, yr:'Forty days later', nm:'The Ascension', ref:'Acts 1:9', why:'Forty days He teaches them, then is lifted up before their eyes. Go and teach all nations, He says; I am with you always. · Rembrandt'},
+    {f:'art/pentecost', d:2.8, yr:'AD 33', nm:'Pentecost', ref:'Acts 2:3', why:'Ten days later the Spirit falls as wind and fire on Mary and the apostles. They preach, three thousand are baptised, and the Church is born. · El Greco'},
+    {f:'art/peter', d:2.8, yr:'The keys', nm:'Saint Peter', ref:'Matthew 16:18', why:'To Simon He had said, Thou art Peter, and upon this rock I will build my Church. Peter goes to Rome and dies there, and his office endures. · Perugino'},
+    {f:'art/paul', d:2.8, yr:'c. AD 35', nm:'The conversion of Paul', ref:'Acts 9:4', why:'The Church\'s fiercest persecutor is struck to the ground on the Damascus road — Saul, why persecutest thou me? — and becomes its apostle to the nations. · Caravaggio'},
+    {f:'art/assumption', d:2.8, yr:'The end of her life', nm:'The Assumption', ref:'Revelation 12:1', why:'At the end of her life Our Lady is taken body and soul into heaven and crowned — the first to follow her Son, and the promise held out to us. · Veronese'},
     // ---- only now the places, each at the year it was raised ----
-    {f:'monuments/great-pyramid', d:2.4, yr:'c. 2560 BC', nm:'Great Pyramid of Giza', ref:'Giza, Egypt', why:'Standing already when Abraham was called'},
-    {f:'monuments/colosseum', d:2.4, yr:'AD 80', nm:'The Colosseum', ref:'Rome, Italy', why:'Where the martyrs gave their witness'},
-    {f:'monuments/mont-saint-michel', d:2.4, yr:'966', nm:'Mont-Saint-Michel', ref:'Normandy, France', why:'An abbey raised to Saint Michael'},
-    {f:'monuments/santiago', d:2.4, yr:'1211', nm:'Santiago de Compostela', ref:'Galicia, Spain', why:'The pilgrim road of Saint James'},
-    {f:'monuments/chartres', d:2.4, yr:'1220', nm:'Chartres Cathedral', ref:'Chartres, France', why:'Stone and glass for Our Lady'},
-    {f:'monuments/cologne', d:2.4, yr:'1248', nm:'Cologne Cathedral', ref:'Cologne, Germany', why:'Begun for the relics of the Magi'},
-    {f:'monuments/assisi', d:2.4, yr:'1253', nm:'Basilica of Saint Francis', ref:'Assisi, Italy', why:'Poverty that renewed the Church'},
-    {f:'monuments/notre-dame', d:2.4, yr:'1345', nm:'Notre-Dame de Paris', ref:'Paris, France', why:'Our Lady in stone and light'},
-    {f:'monuments/milan-duomo', d:2.4, yr:'1386', nm:'Milan Cathedral', ref:'Milan, Italy', why:'Six centuries in the building'},
-    {f:'monuments/sistine-chapel', d:2.4, yr:'1512', nm:'The Sistine Chapel', ref:'Vatican City', why:'Michelangelo paints creation overhead', up:true},
-    {f:'monuments/st-peters', d:2.4, yr:'1626', nm:'St. Peter\'s Basilica', ref:'Vatican City', why:'Raised over the tomb of Peter'},
-    {f:'monuments/st-peters-inside', d:2.4, yr:'1626', nm:'Under the dome', ref:'Vatican City', why:'The heart of the Church on earth'},
-    {f:'monuments/guadalupe', d:2.4, yr:'1709', nm:'Our Lady of Guadalupe', ref:'Mexico City', why:'Where Our Lady appeared to Juan Diego'},
-    {f:'monuments/lourdes', d:2.4, yr:'1876', nm:'Lourdes', ref:'Lourdes, France', why:'Where the sick still come to be healed'},
-    {f:'monuments/st-patricks', d:2.4, yr:'1878', nm:'St. Patrick\'s Cathedral', ref:'New York, USA', why:'The faith carried to the new world'},
-    {f:'monuments/eiffel-tower', d:2.4, yr:'1889', nm:'Eiffel Tower', ref:'Paris, France', why:'The modern age begins', tall:true},
-    {f:'monuments/sacre-coeur', d:2.4, yr:'1914', nm:'Sacré-Cœur', ref:'Montmartre, Paris', why:'Built in reparation, open day and night'},
-    {f:'monuments/christ-the-redeemer', d:2.4, yr:'1931', nm:'Christ the Redeemer', ref:'Rio de Janeiro', why:'Arms open over the new world', tall:true},
-    {f:'monuments/fatima', d:2.4, yr:'1953', nm:'Fátima', ref:'Fátima, Portugal', why:'Where Our Lady asked for the Rosary'},
-    {f:'monuments/sagrada-familia', d:2.4, yr:'1882 – today', nm:'Sagrada Família', ref:'Barcelona, Spain', why:'Still rising, still building', tall:true}
+    {f:'monuments/great-pyramid', d:2.9, yr:'c. 2560 BC', nm:'Great Pyramid of Giza', ref:'Giza, Egypt', why:'From here the story is written in stone. Egypt raised this tomb four centuries before Abraham was called — the world Scripture steps into.'},
+    {f:'monuments/colosseum', d:2.9, yr:'AD 80', nm:'The Colosseum', ref:'Rome, Italy', why:'Ten years after the Temple fell, Rome opened this arena. Here and in the city\'s circuses Christians died rather than deny Christ, and the Church grew on their blood.'},
+    {f:'monuments/mont-saint-michel', d:2.9, yr:'966', nm:'Mont-Saint-Michel', ref:'Normandy, France', why:'Monks built on a tidal rock where the archangel was said to have appeared. Through the dark centuries such abbeys kept faith, learning and Europe itself alive.'},
+    {f:'monuments/santiago', d:2.9, yr:'1211', nm:'Santiago de Compostela', ref:'Galicia, Spain', why:'Consecrated over the tomb of the apostle James, it drew pilgrims across a continent on foot — a road walked without a break for a thousand years.'},
+    {f:'monuments/chartres', d:2.9, yr:'1220', nm:'Chartres Cathedral', ref:'Chartres, France', why:'Rebuilt in twenty-six years after a fire, given to Our Lady, and filled with blue glass no one has since matched. The Gothic age teaching the faith in light.'},
+    {f:'monuments/cologne', d:2.9, yr:'1248', nm:'Cologne Cathedral', ref:'Cologne, Germany', why:'Begun to house the relics of the Magi and left unfinished for three centuries, it was completed at last in 1880 — six hundred years of one intention.'},
+    {f:'monuments/assisi', d:2.9, yr:'1253', nm:'Basilica of Saint Francis', ref:'Assisi, Italy', why:'Raised two years after Francis died, over the grave of the man who gave everything away and heard Christ say: rebuild my Church.'},
+    {f:'monuments/notre-dame', d:2.9, yr:'1345', nm:'Notre-Dame de Paris', ref:'Paris, France', why:'Nearly two hundred years in the building on an island in the Seine. Crowned kings, survived a revolution and a fire, and still stands for Our Lady.'},
+    {f:'monuments/milan-duomo', d:2.9, yr:'1386', nm:'Milan Cathedral', ref:'Milan, Italy', why:'Begun in 1386 and worked on for close to six centuries, it carries more statues than any church on earth — generations who never saw it finished.'},
+    {f:'monuments/sistine-chapel', d:2.9, yr:'1512', nm:'The Sistine Chapel', ref:'Vatican City', why:'Michelangelo spent four years on his back painting creation, the fall and the flood overhead. Beneath it every pope since has been elected.', up:true},
+    {f:'monuments/st-peters', d:2.9, yr:'1626', nm:'St. Peter\'s Basilica', ref:'Vatican City', why:'A hundred and twenty years and the greatest artists of the age, raised directly over the grave of the fisherman Christ called the rock.'},
+    {f:'monuments/st-peters-inside', d:2.9, yr:'1626', nm:'Under the dome', ref:'Vatican City', why:'Under Michelangelo\'s dome, beneath Bernini\'s bronze canopy and above Peter\'s tomb — the visible heart of the Church on earth.'},
+    {f:'monuments/guadalupe', d:2.9, yr:'1709', nm:'Our Lady of Guadalupe', ref:'Mexico City', why:'Where Our Lady appeared to a poor convert in 1531 and left her image on his cloak. Millions came into the Church, and it is still the most visited Marian shrine in the world.'},
+    {f:'monuments/lourdes', d:2.9, yr:'1876', nm:'Lourdes', ref:'Lourdes, France', why:'Built over the grotto where Our Lady told Bernadette, I am the Immaculate Conception. The sick have come to its waters ever since, and some have gone home well.'},
+    {f:'monuments/st-patricks', d:2.9, yr:'1878', nm:'St. Patrick\'s Cathedral', ref:'New York, USA', why:'Raised by Irish immigrants who had almost nothing, in the middle of a growing New York — the faith carried across the ocean to the new world.'},
+    {f:'monuments/eiffel-tower', d:2.9, yr:'1889', nm:'Eiffel Tower', ref:'Paris, France', why:'The modern age announcing itself in iron: the tallest thing men had ever built, and the beginning of a century that would test belief as never before.', tall:true},
+    {f:'monuments/sacre-coeur', d:2.9, yr:'1914', nm:'Sacré-Cœur', ref:'Montmartre, Paris', why:'Built in reparation on the hill of Montmartre, where Paris\'s first bishop was martyred. Someone has knelt in prayer before the altar every hour since 1885.'},
+    {f:'monuments/christ-the-redeemer', d:2.9, yr:'1931', nm:'Christ the Redeemer', ref:'Rio de Janeiro', why:'On a mountain above Rio, arms open wide over a whole continent — the twentieth century\'s answer to the question of who Christ is.', tall:true},
+    {f:'monuments/fatima', d:2.9, yr:'1953', nm:'Fátima', ref:'Fátima, Portugal', why:'Where Our Lady appeared to three shepherd children in 1917, asked for the Rosary and for prayer for peace, and seventy thousand saw the sun dance.'},
+    {f:'monuments/sagrada-familia', d:2.9, yr:'1882 – today', nm:'Sagrada Família', ref:'Barcelona, Spain', why:'Gaudí began it in 1882 and knew he would not live to see it done. It is still rising — the story is not finished, and neither are we.', tall:true}
   ];
   let acc = MON0;
   for(const s of SCENES){ s.start = acc; s.dur = s.d; acc += s.dur; }
@@ -1222,8 +1222,6 @@
     if(journeyQueued) return;
     journeyQueued = true;
     const img = src => { const im = new Image(); im.decoding = 'async'; im.src = src; im.decode?.().catch(() => {}); return im; };
-    J.milkyway = img('planets/milkyway.jpg');
-    J.gaia = img('planets/gaia_sky.jpg');
     const sm = LITE ? '_sm' : '';
     loadTexture('earthDay', `planets/earth_day${sm}.jpg`);
     loadTexture('earthClouds', `planets/earth_clouds${sm}.jpg`);
@@ -1231,7 +1229,11 @@
     loadTexture('earthWater', `planets/earth_water${sm}.jpg`);
     loadTexture('earthBump', `planets/earth_bump${sm}.jpg`);
     loadTexture('moon', 'planets/moon.jpg');
+    loadTexture('mercury', 'planets/mercury.jpg');
+    loadTexture('venus', 'planets/venus.jpg');
     loadTexture('mars', 'planets/mars.jpg');
+    loadTexture('uranus', 'planets/uranus.jpg');
+    loadTexture('neptune', 'planets/neptune.jpg');
     loadTexture('jupiter', 'planets/jupiter.jpg');
     loadTexture('saturn', 'planets/saturn.jpg');
     loadTexture('saturnRing', 'planets/saturn_ring.png');
@@ -1319,12 +1321,18 @@
     const k = S*.5/z;
     return {s, z, x: CX + X*k, y: CY + Y*k, r: R*k, active: t > t0 && t < t1 + .01, fade: smooth(0, .12, s)};
   }
+  // Saturn's rings lie in its equatorial plane, seen here tilted by this angle
+  const RING_TILT = .46, RING_IN = 1.15, RING_OUT = 2.32;
   // a rotating, sunlit globe: each screen pixel is traced to a latitude/longitude on the real surface map
   const BODIES = {
-    mars:    {tex:'mars',    spin:.05,  base:1.2, tilt:.44, haze:[.9,.55,.35], diffuse:'rock', gain:1.35},
-    jupiter: {tex:'jupiter', spin:.14,  base:.4,  tilt:.05, limb:true, gain:1.25},
-    saturn:  {tex:'saturn',  spin:.11,  base:0,   tilt:0,   limb:true, gain:1.3, elev:.42, rings:'saturnRing'},
-    moon:    {tex:'moon',    spin:.02,  base:3.4, tilt:.03, diffuse:'dust', gain:1.45}
+    mercury: {tex:'mercury', spin:.01,  base:2.1, tilt:.02, diffuse:'dust', gain:1.75},
+    venus:   {tex:'venus',   spin:.01,  base:.9,  tilt:.05, limb:true, haze:[1,.92,.7], gain:1.45},
+    mars:    {tex:'mars',    spin:.05,  base:1.2, tilt:.44, haze:[.9,.55,.35], diffuse:'rock', gain:1.6},
+    jupiter: {tex:'jupiter', spin:.14,  base:.4,  tilt:.05, limb:true, gain:1.55},
+    saturn:  {tex:'saturn',  spin:.11,  base:0,   tilt:0,   limb:true, gain:1.6, elev:RING_TILT, rings:'saturnRing'},
+    uranus:  {tex:'uranus',  spin:.06,  base:1.5, tilt:.08, limb:true, haze:[.72,.95,.98], gain:1.5, elev:1.1},
+    neptune: {tex:'neptune', spin:.07,  base:2.6, tilt:.12, limb:true, haze:[.55,.72,1], gain:1.5},
+    moon:    {tex:'moon',    spin:.02,  base:3.4, tilt:.03, diffuse:'dust', gain:1.6}
   };
   const bodyBuf = {};
   function bodyBuffer(key, w, h){
@@ -1345,7 +1353,16 @@
     const ct = Math.cos(B.tilt), st = Math.sin(B.tilt);
     const el = B.elev || 0, ce = Math.cos(el), se = Math.sin(el);
     const TW = T.w, TH = T.h, TD = T.d, TWO_PI = Math.PI*2;
-    const tiltS = Math.sin(.42), tiltC = Math.cos(.42);
+    // ring plane: unit normal in view space, and the sun's angle onto it (rings glow where sunlight strikes them squarely)
+    const tiltS = Math.sin(RING_TILT), tiltC = Math.cos(RING_TILT);
+    const nY = tiltC, nZ = tiltS, LdotN = ly*nY + lz*nZ;
+    const ringLit = Math.min(1, Math.abs(LdotN)*1.9 + .12);
+    // look up the ring strip once per radius: colour and how much light it blocks
+    const ringAt = (rr) => {
+      const f = (rr - RING_IN)/(RING_OUT - RING_IN);
+      const ku = clamp(Math.round(f*(R.w - 1)), 0, R.w - 1);
+      return ((R.h >> 1)*R.w + ku)*4;
+    };
     // bilinear texture sample (wraps in longitude) so surfaces stay crisp and smooth, never blocky
     const px = [0, 0, 0];
     const sample = (u, v) => {
@@ -1384,30 +1401,46 @@
             lit = Math.max(0, ndl);
           }
           lit = lit*B.gain + .008;
+          if(R && LdotN !== 0){
+            // the rings throw a hard dark band across the planet: follow the sunbeam back to the ring plane
+            const s = -(y*nY + nz*nZ)/LdotN;
+            if(s > 0){
+              const hr = Math.hypot(x + s*lx, (y + s*ly)/tiltS);
+              if(hr > RING_IN && hr < RING_OUT) lit *= 1 - R.d[ringAt(hr)+3]/255*.82;
+            }
+          }
           const limb = B.limb ? (.42 + .58*Math.pow(nz, .45)) : (.82 + .18*nz);
           pr = px[0]*lit*limb; pg = px[1]*lit*limb; pb = px[2]*lit*limb;
           if(B.haze){
             const rim = Math.pow(1 - nz, 3.5) * smooth(-.25, .4, ndl);
             pr += B.haze[0]*rim*.4; pg += B.haze[1]*rim*.4; pb += B.haze[2]*rim*.4;
           }
-          pr = 1 - Math.exp(-pr*1.5); pg = 1 - Math.exp(-pg*1.5); pb = 1 - Math.exp(-pb*1.5);
+          pr = 1 - Math.exp(-pr*1.9); pg = 1 - Math.exp(-pg*1.9); pb = 1 - Math.exp(-pb*1.9);
           pa = clamp((1 - Math.sqrt(r2))*half, 0, 1);
           pz = nz;
         }
         if(R){
-          const ry = y / tiltS, rr = Math.hypot(x, ry), rz = -ry*tiltC;
-          if(rr > 1.11 && rr < 2.33){
-            const ku = Math.min(R.w - 1, ((rr - 1.11)/(2.33 - 1.11)*R.w) | 0);
-            const rk = ((R.h >> 1)*R.w + ku)*4;
-            const dens = R.d[rk+3]/255;
-            // planet's shadow falls across the rings on the far side from the sun
-            const shadow = (rz < 0 && x > -.15 && Math.abs(x + ry*.35) < 1) ? .25 : 1;
-            const rc = [R.d[rk]/255*1.1*shadow, R.d[rk+1]/255*1.05*shadow, R.d[rk+2]/255*shadow];
+          const ry = y/tiltS, rz = -ry*tiltC, rr = Math.hypot(x, ry);
+          if(rr > RING_IN - .02 && rr < RING_OUT + .02){
+            const rk = ringAt(rr);
+            // soften the very inner and outer edges so the rings don't end in a jagged step
+            const edge = Math.min(1, (rr - RING_IN + .02)/.04, (RING_OUT + .02 - rr)/.04);
+            let dens = R.d[rk+3]/255 * clamp(edge, 0, 1);
+            // the planet casts a real shadow on the rings: trace the sunbeam and see if the globe blocks it
+            const b = x*lx + y*ly + rz*lz;
+            let shade = 1;
+            if(b < 0){
+              const miss = Math.sqrt(Math.max(0, rr*rr - b*b));
+              shade = lerp(.14, 1, clamp((miss - .98)/.09, 0, 1));
+            }
+            const gl = ringLit*shade;
+            const rc0 = R.d[rk]/255*gl*1.08, rc1 = R.d[rk+1]/255*gl*1.02, rc2 = R.d[rk+2]/255*gl*.95;
             if(rz > pz || pa === 0){
-              pr = lerp(pr, rc[0], dens); pg = lerp(pg, rc[1], dens); pb = lerp(pb, rc[2], dens);
+              // rings in front of the globe (or off its disc): lay them over
+              pr = lerp(pr, rc0, dens); pg = lerp(pg, rc1, dens); pb = lerp(pb, rc2, dens);
               pa = Math.max(pa, dens);
             } else if(pa < 1){
-              pr = lerp(rc[0], pr, pa); pg = lerp(rc[1], pg, pa); pb = lerp(rc[2], pb, pa);
+              pr = lerp(rc0, pr, pa); pg = lerp(rc1, pg, pa); pb = lerp(rc2, pb, pa);
               pa = Math.max(pa, dens);
             }
           }
@@ -1552,61 +1585,27 @@
     const u = clamp((t - ZOOM0)/(GAL_IN - ZOOM0), 0, 1);
     const zf = Math.pow(u, 2.3);
 
-    // 1. the camera pushes into the starfield toward a spiral galaxy until we're inside it
-    const skyA = 1 - smooth(.55, .95, u);
+    // 1. the camera leaves the deep-field sky behind and races through open space
+    const skyA = 1 - smooth(.3, .8, u);
     if(skyA > 0) drawSky(skyA, 1 + zf*12);
 
-    const mw = J.milkyway;
-    if(u < 1 && mw && mw.complete && mw.naturalWidth){
-      // our galaxy seen face-on (NASA/JPL-Caltech/ESO/R. Hurt), approached along a slight tilt toward the Sun's position
-      const gs = S*(.16 + zf*18);
-      const ga = smooth(0, .12, u) * (1 - smooth(.62, .92, u)) * .92;
-      const sunOff = ease(u) * gs * .26;
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.save();
-      ctx.translate(CX + sunOff*.35, CY + sunOff); ctx.rotate(-.35 + t*.012); ctx.scale(1, lerp(.72, .95, ease(u)));
-      ctx.globalAlpha = ga;
-      ctx.drawImage(mw, -gs/2, -gs/2, gs, gs);
-      ctx.restore();
-      ctx.globalAlpha = 1;
-      const coreA = smooth(.5, .9, u) * (1 - smooth(.92, 1.08, u + (t-GAL_IN)*.2));
-      if(coreA > 0){
-        const cg = ctx.createRadialGradient(CX,CY,0,CX,CY,Math.max(W,H)*.8);
-        cg.addColorStop(0,`rgba(255,226,190,${.08*coreA})`);
-        cg.addColorStop(.5,`rgba(170,150,220,${.03*coreA})`);
-        cg.addColorStop(1,'rgba(40,30,80,0)');
-        ctx.fillStyle = cg; ctx.fillRect(0,0,W,H);
-      }
-    }
-
-    // 2. inside the galaxy: faint dust glow and stars streaming past
-    const insideA = smooth(.72, 1, u);
-    if(insideA > 0){
-      // inside the disc: the real Milky Way band as mapped by ESA's Gaia, drifting past as we travel
-      const dustA = insideA * (1 - smooth(PLAN0 + 1, PLAN0 + 4, t)) * .8;
-      const gaia = J.gaia;
-      if(dustA > 0 && gaia && gaia.complete && gaia.naturalWidth){
-        const bh = Math.max(W,H)*1.25, bw = bh*2;
-        const drift = ((t - ZOOM0)*.018) % 1;
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = dustA;
-        ctx.save(); ctx.translate(CX, CY); ctx.rotate(-.42);
-        ctx.drawImage(gaia, -bw*drift - bw/2, -bh/2, bw, bh);
-        ctx.drawImage(gaia, -bw*drift + bw/2, -bh/2, bw, bh);
-        ctx.restore();
-        ctx.globalAlpha = 1;
-      }
-      drawTravelStars(insideA, dt);
-    }
+    // 2. stars streaming past as we cross the distance toward our own star
+    const insideA = smooth(.12, .55, u);
+    if(insideA > 0) drawTravelStars(insideA, dt);
 
     // 3. the Sun ahead, then the planets sweeping past
     drawSun(1);
 
     const bodies = [
-      {key:'mars',    fb: flyby(PLAN0 - .2, PLAN0 + 2.3, 16, .45, .42, .16, .07)},
-      {key:'jupiter', fb: flyby(PLAN0 + 1.0, PLAN0 + 4.4, 18, .5, -.62, .22, .42)},
-      {key:'saturn',  fb: flyby(PLAN0 + 2.5, PLAN0 + 5.6, 18, .48, .66, -.28, .34)},
-      {key:'moon',    fb: flyby(EARTH0 - .6, EARTH0 + 2.9, 14, .38, .36, -.18, .09)}
+      // every planet in turn, outward from the Sun, then the Moon as we come home
+      {key:'mercury', fb: flyby(PLAN0 - .2,   PLAN0 + 2.2,  16, .46, .40, .20, .05)},
+      {key:'venus',   fb: flyby(PLAN0 + 1.4,  PLAN0 + 4.0,  16, .44, -.52, -.16, .09)},
+      {key:'mars',    fb: flyby(PLAN0 + 3.2,  PLAN0 + 5.8,  16, .45, .48, .18, .07)},
+      {key:'jupiter', fb: flyby(PLAN0 + 5.0,  PLAN0 + 8.2,  18, .50, -.62, .22, .42)},
+      {key:'saturn',  fb: flyby(PLAN0 + 7.4,  PLAN0 + 11.0, 18, .50, .68, -.26, .34)},
+      {key:'uranus',  fb: flyby(PLAN0 + 10.2, PLAN0 + 12.8, 16, .46, -.46, -.24, .17)},
+      {key:'neptune', fb: flyby(PLAN0 + 11.9, PLAN0 + 14.2, 16, .46, .44, .22, .16)},
+      {key:'moon',    fb: flyby(EARTH0 - .6,  EARTH0 + 2.9, 14, .38, .36, -.18, .09)}
     ];
     const s = clamp((t - EARTH0)/(FINAL - EARTH0), 0, 1);
     const ez = 1 + 11*Math.pow(1 - s, 2.6);
@@ -1904,11 +1903,11 @@
       if(t < BANG){ chord = 'Am'; pad = .5; drone = .55; arp = 0; pulse = 0; cutoff = 420 + 500*(t/BANG); arpRate = 0;
         noise = smooth(HEAT - .6, BANG, t)*.35; }
       // after the blast the score rests: warm major chords, soft slow bells, no beat
-      else if(t < TITLE){ chord = 'F'; pad = .55; drone = .4; arp = .1; pulse = 0; noise = 0; cutoff = 1000; arpRate = .5; }
-      else if(t < ZOOM0){ chord = t < TITLE + 3 ? 'C' : 'F'; pad = .5; drone = .32; arp = .08; pulse = 0; noise = 0; cutoff = 850; arpRate = .6; }
-      else if(t < PLAN0){ chord = 'F'; pad = .6; drone = .38; arp = .22; pulse = 0; noise = smooth(ZOOM0, GAL_IN, t)*.08; cutoff = 1300; arpRate = .34; }
-      else if(t < EARTH0){ chord = 'C'; pad = .62; drone = .38; arp = .26; pulse = 0; noise = .03; cutoff = 1500; arpRate = .3; }
-      else if(t < DIVE0){ chord = 'F'; pad = .66; drone = .36; arp = .2; pulse = 0; noise = .02; cutoff = 1400; arpRate = .42; }
+      else if(t < TITLE){ chord = 'F'; pad = .34; drone = .26; arp = .05; pulse = 0; noise = 0; cutoff = 760; arpRate = 2.6; }
+      else if(t < ZOOM0){ chord = t < TITLE + 4 ? 'C' : 'F'; pad = .32; drone = .22; arp = .045; pulse = 0; noise = 0; cutoff = 700; arpRate = 3.0; }
+      else if(t < PLAN0){ chord = 'F'; pad = .36; drone = .26; arp = .06; pulse = 0; noise = smooth(ZOOM0, GAL_IN, t)*.05; cutoff = 880; arpRate = 2.4; }
+      else if(t < EARTH0){ chord = t < PLAN0 + 7 ? 'C' : 'F'; pad = .38; drone = .26; arp = .07; pulse = 0; noise = .02; cutoff = 980; arpRate = 2.2; }
+      else if(t < DIVE0){ chord = 'F'; pad = .42; drone = .26; arp = .07; pulse = 0; noise = .015; cutoff = 950; arpRate = 2.4; }
       // the dive home: the music turns to triumph as the story of God reaches its fulfilment
       else if(t < MON0){ chord = 'C'; pad = 1; drone = .85; arp = .55; pulse = .5; noise = smooth(DIVE0, DIVE1, t)*.45; cutoff = 3200; arpRate = .16; }
       else if(t < STORY_END + 1.5){
@@ -1968,7 +1967,6 @@
   })();
 
   const planetCredit = document.getElementById('planetCredit');
-  const MW_CREDIT = 'Milky Way: NASA/JPL-Caltech/ESO/R. Hurt, CC BY 4.0 · Star map: ESA/Gaia/DPAC, CC BY-SA 3.0 IGO';
   const PLANET_CREDIT = 'Planet imagery: NASA · JPL · USGS · Saturn map: Solar System Scope, CC BY 4.0';
   const EARTH_CREDIT = 'Earth: based on "EARTH" by Stéphane Agullo (sketchfab.com/sa3d), CC BY 4.0 · Moon: NASA';
   const FILM_CREDIT = 'Paintings: Michelangelo · Caravaggio · Rembrandt · Leonardo · Fra Angelico · Velázquez · Rubens · El Greco · Perugino · Doré — public domain · Building photographs: Wikimedia Commons, credited per scene';
@@ -1976,7 +1974,7 @@
     if(t > REVEAL + 2) preloadMonuments();
     updateMonuments();
     try { Music.update(t); } catch(e) {}
-    const creditText = t < PLAN0 - .3 ? MW_CREDIT : t < EARTH0 - .8 ? PLANET_CREDIT : t < MON0 ? EARTH_CREDIT : FILM_CREDIT;
+    const creditText = t < EARTH0 - .8 ? PLANET_CREDIT : t < MON0 ? EARTH_CREDIT : FILM_CREDIT;
     if(planetCredit.textContent !== creditText) planetCredit.textContent = creditText;
     planetCredit.classList.toggle('on', (t > ZOOM0 + .5 && t < DIVE0 + .4) || (t > MON0 && t < MON0 + 6));
     if(t > TITLE){ overlay.classList.add('show'); document.body.classList.add('titling'); }
