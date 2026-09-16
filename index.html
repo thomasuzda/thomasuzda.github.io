@@ -217,36 +217,50 @@
   // dive through Earth's clouds, then humanity's great structures from oldest to newest
   const DIVE0 = FINAL + 1.6, DIVE1 = DIVE0 + 2.4, MON0 = DIVE1 - .5, MON_FADE = .5;
 
-  // salvation history, told as the Church tells it; each scene runs as long as its narration needs
-  // footage: public-domain films (1903 Pathé Passion, 1914 Photo-Drama, 1923 Ten Commandments) + generated clips
+  // one timeline in historical order: the events of salvation history (sacred paintings, all public domain)
+  // and the great buildings at the date each was raised (photographs, Wikimedia Commons)
   const SCENES = [
-    {v:'01-creation',     vo:3.29, yr:'In the beginning', nm:'Creation',          ref:'Genesis 1:1',      why:'God speaks, and light and life begin'},
-    {v:'02-eden',         vo:4.27, yr:'The first man',    nm:'Adam and Eve',      ref:'Genesis 2:7',      why:'Man is made in the image of God'},
-    {v:'04-noah',         vo:4.67, yr:'The flood',        nm:'Noah',              ref:'Genesis 9:13',     why:'God saves a remnant and makes a covenant'},
-    {v:'06-moses',        vo:3.66, yr:'c. 1250 BC',       nm:'Moses',             ref:'Exodus 20',        why:'God gives His law to His people'},
-    {v:'07-exodus',       vo:4.50, yr:'The Exodus',       nm:'Through the Sea',   ref:'Exodus 14',        why:'Passover and the passage from slavery to freedom'},
-    {v:'08-david',        vo:5.71, yr:'c. 1000 BC',       nm:'King David',        ref:'2 Samuel 7:16',    why:'From his royal line the Messiah will come'},
-    {v:'09-elijah',       vo:4.44, yr:'c. 860 BC',        nm:'Elijah',            ref:'1 Kings 18:38',    why:'Fire from heaven turns hearts back to God'},
-    {v:'10-isaiah',       vo:4.04, yr:'c. 740 BC',        nm:'Isaiah',            ref:'Isaiah 7:14',      why:'A virgin shall conceive and bear a son'},
-    {v:'11-jeremiah',     vo:4.67, yr:'c. 600 BC',        nm:'Jeremiah',          ref:'Jeremiah 31:31',   why:'A new and everlasting covenant is promised'},
-    {v:'12-ezekiel',      vo:4.51, yr:'c. 590 BC',        nm:'Ezekiel',           ref:'Ezekiel 37:5',     why:'Dry bones rise; dead hearts are made living'},
-    {v:'13b-daniel',      vo:4.85, yr:'c. 540 BC',        nm:'Daniel',            ref:'Daniel 7:13',      why:'He beholds the Son of Man coming in glory'},
-    {v:'13-baptism',      vo:3.37, yr:'AD 30',            nm:'John the Baptist',  ref:'John 1:29',        why:'Behold the Lamb of God'},
-    {v:'14-annunciation', vo:4.31, yr:'The Annunciation', nm:'Mary says yes',     ref:'Luke 1:38',        why:'The new Eve; her fiat opens the way'},
-    {v:'15-nativity',     vo:3.13, yr:'The Nativity',     nm:'The Word made flesh',ref:'John 1:14',       why:'God is born among us'},
-    {v:'16-ministry',     vo:4.14, yr:'His ministry',     nm:'Healing and mercy', ref:'Matthew 14:25',    why:'He forgives sins and masters creation'},
-    {v:'17-lastsupper',   vo:4.48, yr:'Holy Thursday',    nm:'The Last Supper',   ref:'Luke 22:19',       why:'The Eucharist and the priesthood are given'},
-    {v:'18-crucifixion',  vo:3.89, yr:'Good Friday',      nm:'The Crucifixion',   ref:'John 19:30',       why:'The sacrifice that redeems the world'},
-    {v:'19-resurrection', vo:4.17, yr:'Easter',           nm:'The Resurrection',  ref:'Luke 24:6',        why:'Death itself is conquered'},
-    {v:'20-pentecost',    vo:3.66, yr:'Pentecost',        nm:'The Spirit comes',  ref:'Acts 2:3',         why:'The birthday of the Church'},
-    {v:'21-peter',        vo:5.26, yr:'The Church',       nm:'Saint Peter',       ref:'Matthew 16:18',    why:'On this rock, and still standing today'}
+    {f:'art/creation',            yr:'In the beginning', nm:'Creation',              ref:'Genesis 1:3',   why:'God speaks, and there is light'},
+    {f:'art/adam',                yr:'The first man',    nm:'Adam and Eve',          ref:'Genesis 2:7',   why:'Man made in the image of God · Michelangelo'},
+    {f:'art/fall',                yr:'The Fall',         nm:'Sin and the promise',   ref:'Genesis 3:15',  why:'God promises a Redeemer · Michelangelo'},
+    {f:'art/noah',                yr:'The Flood',        nm:'Noah',                  ref:'Genesis 9:13',  why:'A remnant saved, a covenant sealed · Doré'},
+    {f:'monuments/gobekli-tepe',  yr:'c. 9500 BC',       nm:'Göbekli Tepe',          ref:'Şanlıurfa, Türkiye',   why:'The oldest temple men ever raised'},
+    {f:'monuments/stonehenge',    yr:'c. 3000 BC',       nm:'Stonehenge',            ref:'Wiltshire, England',   why:'Stone raised to the heavens'},
+    {f:'monuments/great-pyramid', yr:'c. 2560 BC',       nm:'Great Pyramid of Giza', ref:'Giza, Egypt',          why:'Built while Abraham was yet to be called'},
+    {f:'art/abraham',             yr:'c. 1900 BC',       nm:'Abraham',               ref:'Genesis 22:13', why:'The father in faith; a son offered · Caravaggio'},
+    {f:'art/moses',               yr:'c. 1250 BC',       nm:'Moses',                 ref:'Exodus 20',     why:'The law given on the mountain · Rembrandt'},
+    {f:'art/exodus',              yr:'The Exodus',       nm:'Through the Sea',       ref:'Exodus 14:21',  why:'Passover: from slavery into freedom'},
+    {f:'art/david',               yr:'c. 1000 BC',       nm:'King David',            ref:'2 Samuel 7:16', why:'From his line the Messiah will come'},
+    {f:'art/elijah',              yr:'c. 860 BC',        nm:'Elijah',                ref:'1 Kings 18:38', why:'Fire from heaven turns hearts back'},
+    {f:'art/isaiah',              yr:'c. 740 BC',        nm:'Isaiah',                ref:'Isaiah 7:14',   why:'A virgin shall conceive · Michelangelo'},
+    {f:'art/jeremiah',            yr:'c. 600 BC',        nm:'Jeremiah',              ref:'Jeremiah 31:31',why:'A new and everlasting covenant · Rembrandt'},
+    {f:'art/ezekiel',             yr:'c. 590 BC',        nm:'Ezekiel',               ref:'Ezekiel 37:5',  why:'Dry bones live again · Doré'},
+    {f:'art/daniel',              yr:'c. 540 BC',        nm:'Daniel',                ref:'Daniel 7:13',   why:'He sees the Son of Man coming · Rubens'},
+    {f:'monuments/parthenon',     yr:'438 BC',           nm:'The Parthenon',         ref:'Athens, Greece',       why:'The height of the world Christ would enter'},
+    {f:'monuments/western-wall',  yr:'c. 19 BC',         nm:'The Temple Mount',      ref:'Jerusalem',            why:'The Temple Jesus Himself walked in'},
+    {f:'art/annunciation',        yr:'The Annunciation', nm:'Mary says yes',         ref:'Luke 1:38',     why:'The new Eve; her fiat opens the way · Fra Angelico'},
+    {f:'art/nativity',            yr:'The Nativity',     nm:'The Word made flesh',   ref:'John 1:14',     why:'God born among us · Honthorst'},
+    {f:'art/baptism',             yr:'AD 30',            nm:'John the Baptist',      ref:'John 1:29',     why:'Behold the Lamb of God · Piero della Francesca'},
+    {f:'art/ministry',            yr:'His ministry',     nm:'Master of wind and sea', ref:'Matthew 14:25',why:'He forgives sins and calms the storm · Delacroix'},
+    {f:'art/lastsupper',          yr:'Holy Thursday',    nm:'The Last Supper',       ref:'Luke 22:19',    why:'The Eucharist and the priesthood given · Leonardo'},
+    {f:'art/crucifixion',         yr:'Good Friday',      nm:'The Crucifixion',       ref:'John 19:30',    why:'The sacrifice that redeems the world · Velázquez'},
+    {f:'art/resurrection',        yr:'Easter',           nm:'The Resurrection',      ref:'Luke 24:6',     why:'Death itself conquered · Piero della Francesca'},
+    {f:'art/pentecost',           yr:'AD 33',            nm:'Pentecost',             ref:'Acts 2:3',      why:'The Church is born · El Greco'},
+    {f:'art/peter',               yr:'The keys',         nm:'Saint Peter',           ref:'Matthew 16:18', why:'On this rock I will build my Church · Perugino'},
+    {f:'monuments/colosseum',     yr:'AD 80',            nm:'The Colosseum',         ref:'Rome, Italy',          why:'Where the martyrs gave their witness'},
+    {f:'monuments/hagia-sophia',  yr:'AD 537',           nm:'Hagia Sophia',          ref:'Constantinople',       why:'The greatest church in Christendom'},
+    {f:'monuments/notre-dame',    yr:'1345',             nm:'Notre-Dame de Paris',   ref:'Paris, France',        why:'Our Lady in stone and light'},
+    {f:'monuments/sistine-chapel',yr:'1512',             nm:'The Sistine Chapel',    ref:'Vatican City',         why:'Michelangelo paints creation overhead', up:true},
+    {f:'monuments/st-peters',     yr:'1626',             nm:"St. Peter's Basilica",  ref:'Vatican City',         why:'Raised over the tomb of Peter'},
+    {f:'monuments/eiffel-tower',  yr:'1889',             nm:'Eiffel Tower',          ref:'Paris, France',        why:'The modern age begins', tall:true},
+    {f:'monuments/christ-the-redeemer', yr:'1931',       nm:'Christ the Redeemer',   ref:'Rio de Janeiro',       why:'Arms open over the new world', tall:true},
+    {f:'monuments/sagrada-familia', yr:'1882 – today',   nm:'Sagrada Família',       ref:'Barcelona, Spain',     why:'Still rising, still building', tall:true}
   ];
-  const SCENE_GAP = .75;
   let acc = MON0;
-  for(const s of SCENES){ s.start = acc; s.dur = Math.max(4, s.vo + SCENE_GAP); acc += s.dur; }
+  for(const s of SCENES){ s.start = acc; s.dur = 3.2; acc += s.dur; }
   const MON_END = acc - SCENES[SCENES.length-1].dur + MON_FADE;   // last scene begins
   const STORY_END = acc;                                          // last scene finishes
-  const MON_STEP = 4.5;
+  const MON_STEP = 3.2;
 
   // phones and tablets get a lighter render: fewer particles, smaller rock buffer, lower canvas resolution
   const LITE = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 700;
@@ -1654,57 +1668,47 @@
   }
 
   // words fly in, hold, then fly out past the camera as the journey begins; replay appears once we reach Earth
-  // ---- salvation history: each scene is a short film clip with its own narration ----
+  // ---- the timeline: sacred paintings and the buildings, each with a slow camera move ----
   const monRoot = document.getElementById('monuments'), tlFill = document.getElementById('tlFill');
   const monSlides = SCENES.map((m, i) => {
     const el = document.createElement('div');
-    el.className = 'mon';
-    el.innerHTML = `<div class="frame"><video muted playsinline preload="none" disablepictureinpicture></video></div>
+    el.className = 'mon' + (m.tall ? ' tall' : '');
+    el.innerHTML = `${m.tall ? '<img class="backdrop" alt="" aria-hidden="true" decoding="async">' : ''}<div class="frame"><img alt="${m.nm}" decoding="async"></div>
       <div class="cap"><div class="yr">${m.yr}</div><div class="nm">${m.nm}</div><div class="pl">${m.ref}</div><div class="cr">${m.why}</div></div>`;
     monRoot.appendChild(el);
-    return {el, frame: el.querySelector('.frame'), video: el.querySelector('video'), m, dir: i % 2 ? -1 : 1, loaded: false, playing: false, spoke: false, vo: null};
+    return {el, frame: el.querySelector('.frame'), imgs: el.querySelectorAll('img'), m, dir: i % 2 ? -1 : 1, loaded: false};
   });
-  function preloadMonuments(){
-    // only the first couple up front; the rest load just before their turn
-    for(let i = 0; i < 2; i++) loadSlide(monSlides[i]);
-  }
   function loadSlide(s){
     if(s.loaded) return;
     s.loaded = true;
-    s.video.src = `bible/${s.m.v}.mp4`;
-    s.video.load();
-    s.vo = new Audio(`audio/vo/${s.m.v}.m4a`);
-    s.vo.preload = 'auto';
+    s.imgs.forEach(im => im.src = `${s.m.f}.jpg`);
+  }
+  function preloadMonuments(){
+    for(let i = 0; i < 4; i++) loadSlide(monSlides[i]);
   }
 
-  let narrating = false;
+  const narrating = false;
   function updateMonuments(){
     const rootA = smooth(MON0, MON0 + .5, t);
     monRoot.style.opacity = rootA;
-    if(rootA <= 0){
-      if(narrating){ narrating = false; monSlides.forEach(s => { if(s.vo){ s.vo.pause(); s.vo.currentTime = 0; } s.spoke = false; if(s.playing){ s.video.pause(); s.playing = false; } }); }
-      return;
-    }
+    if(rootA <= 0) return;
     tlFill.style.width = `${clamp((t - MON0)/(STORY_END - MON0), 0, 1)*100}%`;
-    let anySpeaking = false;
     monSlides.forEach((s, i) => {
       const start = s.m.start, dur = s.m.dur, last = i === monSlides.length - 1;
-      if(!s.loaded && t > start - 4) loadSlide(s);
+      if(!s.loaded && t > start - 6) loadSlide(s);
       const a = smooth(start, start + MON_FADE, t) * (last ? 1 : 1 - smooth(start + dur, start + dur + MON_FADE, t));
       s.el.style.opacity = a;
-      const active = a > .45;
-      s.el.classList.toggle('on', active);
-      if(active && !s.playing){ s.video.currentTime = 0; s.video.play().catch(() => {}); s.playing = true; }
-      if(!active && s.playing){ s.video.pause(); s.playing = false; }
-      if(active && !s.spoke && s.vo){ s.spoke = true; s.vo.currentTime = 0; s.vo.volume = 1; s.vo.play().catch(() => {}); }
-      if(s.vo && s.spoke && !s.vo.ended && !s.vo.paused) anySpeaking = true;
+      s.el.classList.toggle('on', a > .45);
       if(a <= 0) return;
-      // slow drift over the footage so even a still frame breathes
+      // gentle push-in with a slight perspective swing, alternating direction scene to scene
       const p = clamp((t - start)/(dur + MON_FADE), 0, 1);
       const d = s.dir;
-      s.frame.style.transform = `translate3d(${d*lerp(1.5,-1.5,p)}%, ${lerp(1,-1,p)}%, 0) scale(${lerp(1.06,1.14,p)})`;
+      if(s.m.tall || s.m.up){
+        s.frame.style.transform = `translate3d(${d*lerp(-1.5,1.5,p)}%, ${lerp(4,-4,p)}%, 0) rotateX(${lerp(6,-3,p)*(s.m.up ? -1 : 1)}deg) scale(${lerp(1.04,1.13,p)})`;
+      } else {
+        s.frame.style.transform = `translate3d(${d*lerp(3,-3,p)}%, ${lerp(1.5,-1.5,p)}%, 0) rotateY(${d*lerp(-6,5,p)}deg) scale(${lerp(1.05,1.15,p)})`;
+      }
     });
-    narrating = anySpeaking;
   }
 
   // ================= score: a space-traveller soundtrack synthesised live, following the picture =================
@@ -1913,7 +1917,7 @@
   const MW_CREDIT = 'Milky Way: NASA/JPL-Caltech/ESO/R. Hurt, CC BY 4.0 · Star map: ESA/Gaia/DPAC, CC BY-SA 3.0 IGO';
   const PLANET_CREDIT = 'Planet imagery: NASA · JPL · USGS · Saturn map: Solar System Scope, CC BY 4.0';
   const EARTH_CREDIT = 'Earth: based on "EARTH" by Stéphane Agullo (sketchfab.com/sa3d), CC BY 4.0 · Moon: NASA';
-  const FILM_CREDIT = 'Footage: The Life and Passion of Jesus Christ (1903) · The Photo-Drama of Creation (1914) · The Ten Commandments (1923) — public domain · prophet scenes generated';
+  const FILM_CREDIT = 'Paintings: Michelangelo · Caravaggio · Rembrandt · Leonardo · Fra Angelico · Velázquez · Rubens · El Greco · Perugino · Doré — public domain · Building photographs: Wikimedia Commons, credited per scene';
   function stage(){
     if(t > REVEAL + 2) preloadMonuments();
     updateMonuments();
