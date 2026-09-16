@@ -69,7 +69,7 @@
   .monuments{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;background:#030208;perspective:1100px;overflow:hidden}
   .mon{position:absolute;inset:0;opacity:0;will-change:opacity}
   .mon .frame{position:absolute;inset:-9%;transform-style:preserve-3d;will-change:transform}
-  .mon img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.08) contrast(1.04)}
+  .mon img, .mon video{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.06) contrast(1.05)}
   .mon .backdrop{position:absolute;inset:-12%;width:124%;height:124%;object-fit:cover;filter:blur(34px) brightness(.5) saturate(1.15);display:none}
   @media (orientation: landscape){
     .mon.tall .backdrop{display:block}
@@ -90,7 +90,7 @@
   .cap .yr{font-family:var(--mono);font-size:clamp(11px,1.3vw,13px);letter-spacing:.24em;text-transform:uppercase;color:var(--plasma)}
   .cap .nm{margin-top:8px;font-family:var(--display);font-weight:300;font-size:clamp(34px,6vw,76px);line-height:1;letter-spacing:-.02em;color:var(--ink);text-shadow:0 2px 30px rgba(3,2,8,.8);text-wrap:balance}
   .cap .pl{margin-top:10px;font-family:var(--display);font-style:italic;font-size:clamp(15px,1.9vw,21px);color:var(--ink-dim)}
-  .cap .cr{margin-top:16px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:rgba(243,239,230,.42)}
+  .cap .cr{margin-top:14px;font-family:var(--display);font-style:italic;font-size:clamp(13px,1.5vw,17px);letter-spacing:.01em;color:rgba(243,239,230,.62)}
   .timeline{
     position:absolute;left:clamp(20px,5vw,64px);right:clamp(20px,5vw,64px);top:clamp(18px,4vh,34px);height:2px;z-index:1;
     background:rgba(243,239,230,.14);border-radius:2px;overflow:hidden;
@@ -215,26 +215,38 @@
   // the title holds for the length of the narration, then the journey runs at a quicker pace
   const DEPART = TITLE + 6.0, ZOOM0 = DEPART + .3, GAL_IN = ZOOM0 + 5.5, PLAN0 = GAL_IN + 2.4, EARTH0 = PLAN0 + 5.2, FINAL = EARTH0 + 4.8;
   // dive through Earth's clouds, then humanity's great structures from oldest to newest
-  const DIVE0 = FINAL + 1.6, DIVE1 = DIVE0 + 2.4, MON0 = DIVE1 - .5, MON_STEP = 1.75, MON_FADE = .35;
+  const DIVE0 = FINAL + 1.6, DIVE1 = DIVE0 + 2.4, MON0 = DIVE1 - .5, MON_FADE = .5;
 
-  // photos: Wikimedia Commons, credited on screen per their licences
-  const MONUMENTS = [
-    {img:'gobekli-tepe',        yr:'c. 9500 BC',   nm:'Göbekli Tepe',          pl:'Şanlıurfa, Türkiye',    cr:'Teomancimit · CC BY-SA 3.0'},
-    {img:'stonehenge',          yr:'c. 3000 BC',   nm:'Stonehenge',            pl:'Wiltshire, England',    cr:'garethwiscombe · CC BY 2.0'},
-    {img:'great-pyramid',       yr:'c. 2560 BC',   nm:'Great Pyramid of Giza', pl:'Giza, Egypt',           cr:'Douwe C. van der Zee · CC BY-SA 4.0'},
-    {img:'parthenon',           yr:'438 BC',       nm:'The Parthenon',         pl:'Athens, Greece',        cr:'Steve Swayne · CC BY 2.0'},
-    {img:'western-wall',        yr:'c. 19 BC',     nm:'The Western Wall',      pl:'Jerusalem',             cr:'Golasso · CC BY-SA 4.0'},
-    {img:'colosseum',           yr:'AD 80',        nm:'The Colosseum',         pl:'Rome, Italy',           cr:'FeaturedPics · CC BY-SA 4.0'},
-    {img:'hagia-sophia',        yr:'AD 537',       nm:'Hagia Sophia',          pl:'Istanbul, Türkiye',     cr:'Adli Wahid · CC BY-SA 3.0'},
-    {img:'notre-dame',          yr:'1345',         nm:'Notre-Dame de Paris',   pl:'Paris, France',         cr:'Ali Sabbagh · CC0'},
-    {img:'sistine-chapel',      yr:'1512',         nm:'Sistine Chapel Ceiling',pl:'Vatican City',          cr:'Antoine Taveneaux · CC BY-SA 3.0', up:true},
-    {img:'st-peters',           yr:'1626',         nm:"St. Peter's Basilica",  pl:'Vatican City',          cr:'Alvesgaspar · CC BY-SA 4.0'},
-    {img:'taj-mahal',           yr:'1653',         nm:'Taj Mahal',             pl:'Agra, India',           cr:'Yann, edited by Jim Carter · CC BY-SA 4.0'},
-    {img:'eiffel-tower',        yr:'1889',         nm:'Eiffel Tower',          pl:'Paris, France',         cr:'Benh LIEU SONG · Public domain', tall:true},
-    {img:'christ-the-redeemer', yr:'1931',         nm:'Christ the Redeemer',   pl:'Rio de Janeiro, Brazil',cr:'Arne Müseler · CC BY-SA 3.0 DE', tall:true},
-    {img:'sagrada-familia',     yr:'1882 – today', nm:'Sagrada Família',       pl:'Barcelona, Spain',      cr:'Canaan · CC BY-SA 4.0', tall:true}
+  // salvation history, told as the Church tells it; each scene runs as long as its narration needs
+  // footage: public-domain films (1903 Pathé Passion, 1914 Photo-Drama, 1923 Ten Commandments) + generated clips
+  const SCENES = [
+    {v:'01-creation',     vo:3.29, yr:'In the beginning', nm:'Creation',          ref:'Genesis 1:1',      why:'God speaks, and light and life begin'},
+    {v:'02-eden',         vo:4.27, yr:'The first man',    nm:'Adam and Eve',      ref:'Genesis 2:7',      why:'Man is made in the image of God'},
+    {v:'04-noah',         vo:4.67, yr:'The flood',        nm:'Noah',              ref:'Genesis 9:13',     why:'God saves a remnant and makes a covenant'},
+    {v:'06-moses',        vo:3.66, yr:'c. 1250 BC',       nm:'Moses',             ref:'Exodus 20',        why:'God gives His law to His people'},
+    {v:'07-exodus',       vo:4.50, yr:'The Exodus',       nm:'Through the Sea',   ref:'Exodus 14',        why:'Passover and the passage from slavery to freedom'},
+    {v:'08-david',        vo:5.71, yr:'c. 1000 BC',       nm:'King David',        ref:'2 Samuel 7:16',    why:'From his royal line the Messiah will come'},
+    {v:'09-elijah',       vo:4.44, yr:'c. 860 BC',        nm:'Elijah',            ref:'1 Kings 18:38',    why:'Fire from heaven turns hearts back to God'},
+    {v:'10-isaiah',       vo:4.04, yr:'c. 740 BC',        nm:'Isaiah',            ref:'Isaiah 7:14',      why:'A virgin shall conceive and bear a son'},
+    {v:'11-jeremiah',     vo:4.67, yr:'c. 600 BC',        nm:'Jeremiah',          ref:'Jeremiah 31:31',   why:'A new and everlasting covenant is promised'},
+    {v:'12-ezekiel',      vo:4.51, yr:'c. 590 BC',        nm:'Ezekiel',           ref:'Ezekiel 37:5',     why:'Dry bones rise; dead hearts are made living'},
+    {v:'13b-daniel',      vo:4.85, yr:'c. 540 BC',        nm:'Daniel',            ref:'Daniel 7:13',      why:'He beholds the Son of Man coming in glory'},
+    {v:'13-baptism',      vo:3.37, yr:'AD 30',            nm:'John the Baptist',  ref:'John 1:29',        why:'Behold the Lamb of God'},
+    {v:'14-annunciation', vo:4.31, yr:'The Annunciation', nm:'Mary says yes',     ref:'Luke 1:38',        why:'The new Eve; her fiat opens the way'},
+    {v:'15-nativity',     vo:3.13, yr:'The Nativity',     nm:'The Word made flesh',ref:'John 1:14',       why:'God is born among us'},
+    {v:'16-ministry',     vo:4.14, yr:'His ministry',     nm:'Healing and mercy', ref:'Matthew 14:25',    why:'He forgives sins and masters creation'},
+    {v:'17-lastsupper',   vo:4.48, yr:'Holy Thursday',    nm:'The Last Supper',   ref:'Luke 22:19',       why:'The Eucharist and the priesthood are given'},
+    {v:'18-crucifixion',  vo:3.89, yr:'Good Friday',      nm:'The Crucifixion',   ref:'John 19:30',       why:'The sacrifice that redeems the world'},
+    {v:'19-resurrection', vo:4.17, yr:'Easter',           nm:'The Resurrection',  ref:'Luke 24:6',        why:'Death itself is conquered'},
+    {v:'20-pentecost',    vo:3.66, yr:'Pentecost',        nm:'The Spirit comes',  ref:'Acts 2:3',         why:'The birthday of the Church'},
+    {v:'21-peter',        vo:5.26, yr:'The Church',       nm:'Saint Peter',       ref:'Matthew 16:18',    why:'On this rock, and still standing today'}
   ];
-  const MON_END = MON0 + (MONUMENTS.length - 1)*MON_STEP + MON_FADE;
+  const SCENE_GAP = .75;
+  let acc = MON0;
+  for(const s of SCENES){ s.start = acc; s.dur = Math.max(4, s.vo + SCENE_GAP); acc += s.dur; }
+  const MON_END = acc - SCENES[SCENES.length-1].dur + MON_FADE;   // last scene begins
+  const STORY_END = acc;                                          // last scene finishes
+  const MON_STEP = 4.5;
 
   // phones and tablets get a lighter render: fewer particles, smaller rock buffer, lower canvas resolution
   const LITE = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 700;
@@ -1151,6 +1163,8 @@
     loadTexture('earthDay', `planets/earth_day${sm}.jpg`);
     loadTexture('earthClouds', `planets/earth_clouds${sm}.jpg`);
     loadTexture('earthNight', `planets/earth_night${sm}.jpg`);
+    loadTexture('earthWater', `planets/earth_water${sm}.jpg`);
+    loadTexture('earthBump', `planets/earth_bump${sm}.jpg`);
     loadTexture('moon', 'planets/moon.jpg');
     loadTexture('mars', 'planets/mars.jpg');
     loadTexture('jupiter', 'planets/jupiter.jpg');
@@ -1370,13 +1384,14 @@
   // ---- Earth: NASA Blue Marble day, cloud cover and Black Marble night lights ----
   const earthCv = document.createElement('canvas'), earthCtx = earthCv.getContext('2d');
   let earthImg = null, earthFrame = 0;
-  function earthReady(){ return TEX.earthDay && TEX.earthClouds && TEX.earthNight; }
+  function earthReady(){ return TEX.earthDay && TEX.earthClouds && TEX.earthNight && TEX.earthWater && TEX.earthBump; }
   function renderEarth(){
     if(!earthReady()) return;
     const RS = LITE ? 300 : 520;
     if(earthCv.width !== RS){ earthCv.width = earthCv.height = RS; earthImg = earthCtx.createImageData(RS, RS); }
     const d = earthImg.data, half = RS/2;
-    const DAY = TEX.earthDay, CLD = TEX.earthClouds, NGT = TEX.earthNight;
+    const DAY = TEX.earthDay, CLD = TEX.earthClouds, NGT = TEX.earthNight, WAT = TEX.earthWater, BMP = TEX.earthBump;
+    const bw = BMP.w, bh = BMP.h;
     // sun low from the left so a crescent of night, with city lights, wraps the right limb
     const lx = -.83, ly = -.3, lz = .47;
     let hx = lx, hy = ly, hz = lz + 1; const hl = Math.hypot(hx,hy,hz); hx /= hl; hy /= hl; hz /= hl;
@@ -1402,12 +1417,21 @@
         const kn = (Math.min(NGT.h-1, (v*NGT.h)|0)*NGT.w + Math.min(NGT.w-1, (u*NGT.w)|0))*4;
 
         let r = DAY.d[kd]/255, g = DAY.d[kd+1]/255, b = DAY.d[kd+2]/255;
-        const water = b > r*1.15 && b > g*.95 ? 1 : 0;
+        const kw = (Math.min(WAT.h-1, (v*WAT.h)|0)*WAT.w + Math.min(WAT.w-1, (u*WAT.w)|0))*4;
+        const water = WAT.d[kw]/255;
         const ndl = nx*lx + ny*ly + nz*lz;
         const day = smooth(-.14, .22, ndl);
         const diff = Math.max(0, ndl);
         const cl = smooth(.16, .85, CLD.d[kc]/255);
-        const lit = diff*1.3 + .012;
+        // mountain relief from the elevation map: slopes facing the sun (upper left) brighten, others shade
+        let relief = 1;
+        if(water < .5){
+          const bx = Math.min(bw-2, Math.max(1, (u*bw)|0)), by = Math.min(bh-2, Math.max(1, (v*bh)|0));
+          const west = BMP.d[(by*bw + bx - 1)*4], east = BMP.d[(by*bw + bx + 1)*4];
+          const north = BMP.d[((by-1)*bw + bx)*4], south = BMP.d[((by+1)*bw + bx)*4];
+          relief = clamp(1 + ((west - east)*.9 + (north - south)*.35)/255*6, .55, 1.5);
+        }
+        const lit = diff*1.3*relief + .012;
         r *= lit; g *= lit; b *= lit;
         const ndh = Math.max(0, nx*hx + ny*hy + nz*hz);
         const glint = (Math.pow(ndh, 180)*.7 + Math.pow(ndh, 24)*.05) * water * (1 - cl);
@@ -1630,42 +1654,57 @@
   }
 
   // words fly in, hold, then fly out past the camera as the journey begins; replay appears once we reach Earth
+  // ---- salvation history: each scene is a short film clip with its own narration ----
   const monRoot = document.getElementById('monuments'), tlFill = document.getElementById('tlFill');
-  const monSlides = MONUMENTS.map((m, i) => {
+  const monSlides = SCENES.map((m, i) => {
     const el = document.createElement('div');
-    el.className = m.tall ? 'mon tall' : 'mon';
-    el.innerHTML = `${m.tall ? '<img class="backdrop" alt="" aria-hidden="true" decoding="async">' : ''}<div class="frame"><img alt="${m.nm}" decoding="async"></div>
-      <div class="cap"><div class="yr">${m.yr}</div><div class="nm">${m.nm}</div><div class="pl">${m.pl}</div><div class="cr">Photo: ${m.cr} · Wikimedia Commons</div></div>`;
+    el.className = 'mon';
+    el.innerHTML = `<div class="frame"><video muted playsinline preload="none" disablepictureinpicture></video></div>
+      <div class="cap"><div class="yr">${m.yr}</div><div class="nm">${m.nm}</div><div class="pl">${m.ref}</div><div class="cr">${m.why}</div></div>`;
     monRoot.appendChild(el);
-    return {el, frame: el.querySelector('.frame'), imgs: el.querySelectorAll('img'), m, dir: i % 2 ? -1 : 1, loaded: false};
+    return {el, frame: el.querySelector('.frame'), video: el.querySelector('video'), m, dir: i % 2 ? -1 : 1, loaded: false, playing: false, spoke: false, vo: null};
   });
   function preloadMonuments(){
-    for(const s of monSlides) if(!s.loaded){ s.imgs.forEach(im => im.src = `monuments/${s.m.img}.jpg`); s.loaded = true; }
+    // only the first couple up front; the rest load just before their turn
+    for(let i = 0; i < 2; i++) loadSlide(monSlides[i]);
+  }
+  function loadSlide(s){
+    if(s.loaded) return;
+    s.loaded = true;
+    s.video.src = `bible/${s.m.v}.mp4`;
+    s.video.load();
+    s.vo = new Audio(`audio/vo/${s.m.v}.m4a`);
+    s.vo.preload = 'auto';
   }
 
-  // each photo gets a slow orbit-like move: perspective swing, push-in and drift (tall subjects tilt upward instead)
+  let narrating = false;
   function updateMonuments(){
     const rootA = smooth(MON0, MON0 + .5, t);
     monRoot.style.opacity = rootA;
-    if(rootA <= 0){ return; }
-    tlFill.style.width = `${clamp((t - MON0)/(MON_END - MON0), 0, 1)*100}%`;
+    if(rootA <= 0){
+      if(narrating){ narrating = false; monSlides.forEach(s => { if(s.vo){ s.vo.pause(); s.vo.currentTime = 0; } s.spoke = false; if(s.playing){ s.video.pause(); s.playing = false; } }); }
+      return;
+    }
+    tlFill.style.width = `${clamp((t - MON0)/(STORY_END - MON0), 0, 1)*100}%`;
+    let anySpeaking = false;
     monSlides.forEach((s, i) => {
-      const start = MON0 + i*MON_STEP, last = i === monSlides.length - 1;
-      const a = smooth(start, start + MON_FADE, t) * (last ? 1 : 1 - smooth(start + MON_STEP, start + MON_STEP + MON_FADE, t));
+      const start = s.m.start, dur = s.m.dur, last = i === monSlides.length - 1;
+      if(!s.loaded && t > start - 4) loadSlide(s);
+      const a = smooth(start, start + MON_FADE, t) * (last ? 1 : 1 - smooth(start + dur, start + dur + MON_FADE, t));
       s.el.style.opacity = a;
-      s.el.classList.toggle('on', a > .5 && t < start + MON_STEP + (last ? 999 : 0));
+      const active = a > .45;
+      s.el.classList.toggle('on', active);
+      if(active && !s.playing){ s.video.currentTime = 0; s.video.play().catch(() => {}); s.playing = true; }
+      if(!active && s.playing){ s.video.pause(); s.playing = false; }
+      if(active && !s.spoke && s.vo){ s.spoke = true; s.vo.currentTime = 0; s.vo.volume = 1; s.vo.play().catch(() => {}); }
+      if(s.vo && s.spoke && !s.vo.ended && !s.vo.paused) anySpeaking = true;
       if(a <= 0) return;
-      // montage move: a quick punch-in that eases out while the camera swings, like a fast cut in a trailer
-      const raw = clamp((t - start)/(MON_STEP + MON_FADE*2), 0, 1.3);
-      const p = 1 - Math.pow(1 - Math.min(1, raw), 2.2) + Math.max(0, raw - 1)*.3;
+      // slow drift over the footage so even a still frame breathes
+      const p = clamp((t - start)/(dur + MON_FADE), 0, 1);
       const d = s.dir;
-      if(s.m.tall || s.m.up){
-        const rx = lerp(12, -4, p) * (s.m.up ? -1 : 1);
-        s.frame.style.transform = `translate3d(${d*lerp(-2,2,p)}%, ${lerp(7,-5,p)}%, 0) rotateX(${rx}deg) rotateY(${d*lerp(-4,4,p)}deg) scale(${lerp(1.18,1.04,p)})`;
-      } else {
-        s.frame.style.transform = `translate3d(${d*lerp(6,-5,p)}%, ${lerp(2,-2,p)}%, 0) rotateY(${d*lerp(-13,8,p)}deg) rotateX(${lerp(3,-1,p)}deg) scale(${lerp(1.26,1.08,p)})`;
-      }
+      s.frame.style.transform = `translate3d(${d*lerp(1.5,-1.5,p)}%, ${lerp(1,-1,p)}%, 0) scale(${lerp(1.06,1.14,p)})`;
     });
+    narrating = anySpeaking;
   }
 
   // ================= score: a space-traveller soundtrack synthesised live, following the picture =================
@@ -1814,13 +1853,13 @@
       else if(t < EARTH0){ chord = 'G'; pad = .85; drone = .6; arp = .55; pulse = .25; noise = .06; cutoff = 2200; arpRate = .14; }
       else if(t < DIVE0){ chord = 'Em'; pad = .9; drone = .55; arp = .4; pulse = 0; noise = .04; cutoff = 2000; arpRate = .2; }
       else if(t < MON0){ chord = 'Am'; pad = .7; drone = .7; arp = .2; pulse = 0; noise = smooth(DIVE0, DIVE1, t)*.4; cutoff = 2600; arpRate = .2; }
-      else if(t < MON_END + 1.5){
+      else if(t < STORY_END + 1.5){
         const idx = Math.floor((t - MON0)/(MON_STEP*2));
         chord = MONTAGE[idx % MONTAGE.length]; pad = .9; drone = .75; arp = .6; pulse = .85; noise = 0; cutoff = 2800; arpRate = .125;
       } else { chord = 'C'; pad = .6; drone = .35; arp = .15; pulse = 0; noise = 0; cutoff = 1200; arpRate = .3; }
 
       // duck the music under the narrator
-      const duck = (t > TITLE + .3 && t < TITLE + 4.8) ? .45 : 1;
+      const duck = ((t > TITLE + .3 && t < TITLE + 4.8) || narrating) ? .4 : 1;
       setChord(chord);
       level(padGain.gain, pad*.9*duck, .6);
       level(droneGain.gain, drone*.9*duck, .6);
@@ -1873,16 +1912,18 @@
   const planetCredit = document.getElementById('planetCredit');
   const MW_CREDIT = 'Milky Way: NASA/JPL-Caltech/ESO/R. Hurt, CC BY 4.0 · Star map: ESA/Gaia/DPAC, CC BY-SA 3.0 IGO';
   const PLANET_CREDIT = 'Planet imagery: NASA · JPL · USGS · Saturn map: Solar System Scope, CC BY 4.0';
+  const EARTH_CREDIT = 'Earth: based on "EARTH" by Stéphane Agullo (sketchfab.com/sa3d), CC BY 4.0 · Moon: NASA';
+  const FILM_CREDIT = 'Footage: The Life and Passion of Jesus Christ (1903) · The Photo-Drama of Creation (1914) · The Ten Commandments (1923) — public domain · prophet scenes generated';
   function stage(){
     if(t > REVEAL + 2) preloadMonuments();
     updateMonuments();
     try { Music.update(t); } catch(e) {}
-    const creditText = t < PLAN0 - .3 ? MW_CREDIT : PLANET_CREDIT;
+    const creditText = t < PLAN0 - .3 ? MW_CREDIT : t < EARTH0 - .8 ? PLANET_CREDIT : t < MON0 ? EARTH_CREDIT : FILM_CREDIT;
     if(planetCredit.textContent !== creditText) planetCredit.textContent = creditText;
-    planetCredit.classList.toggle('on', t > ZOOM0 + .5 && t < DIVE0 + .4);
+    planetCredit.classList.toggle('on', (t > ZOOM0 + .5 && t < DIVE0 + .4) || (t > MON0 && t < MON0 + 6));
     if(t > TITLE){ overlay.classList.add('show'); document.body.classList.add('titling'); }
     if(t > DEPART) overlay.classList.add('depart');
-    if(t > MON_END + 2) document.body.classList.add('done');
+    if(t > STORY_END + 1) document.body.classList.add('done');
     clock.innerHTML = clockText();
   }
 
